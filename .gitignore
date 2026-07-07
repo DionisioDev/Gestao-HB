@@ -1,0 +1,23 @@
+# Dependências
+node_modules/
+
+# Ambiente e segredos — NUNCA versionar
+.env
+.env.*
+*.local.md
+credenciais*
+serviceAccount*.json
+
+# Build
+dist/
+build/
+.next/
+
+# Ferramentas locais
+.playwright/
+playwright-report/
+test-results/
+
+# SO / editor
+.DS_Store
+Thumbs.db
