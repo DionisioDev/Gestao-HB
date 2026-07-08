@@ -13,6 +13,7 @@
     "@gestao-hb/core": "workspace:*",
     "@gestao-hb/firebase": "workspace:*",
     "@gestao-hb/ui": "workspace:*",
+    "firebase": "^11.10.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

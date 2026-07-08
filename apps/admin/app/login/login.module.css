@@ -1,0 +1,309 @@
+/* Login — Material 3 com a identidade HB (seção 6). Split brand/form no desktop. */
+
+.pagina {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(380px, 44%) 1fr;
+}
+
+/* ---------- painel de marca ---------- */
+.marca {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 15% 0%, #16385a 0%, transparent 55%),
+    radial-gradient(140% 110% at 100% 100%, #0a1e31 0%, transparent 60%),
+    var(--hb-primaria);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px;
+}
+
+/* treliça de losangos sutil — alusão à malha de prata */
+.marca::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 22px);
+  pointer-events: none;
+}
+
+/* brilho creme discreto */
+.marca::after {
+  content: '';
+  position: absolute;
+  width: 460px;
+  height: 460px;
+  right: -160px;
+  top: -160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(247, 243, 234, 0.14) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.selo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  animation: subir 400ms var(--hb-transicao) both;
+}
+
+.seloCirculo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--hb-primaria);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12);
+}
+
+.seloNome {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.seloSub {
+  font-size: var(--hb-legenda);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.manchete {
+  position: relative;
+  max-width: 400px;
+  animation: subir 400ms 80ms var(--hb-transicao) both;
+}
+
+.manchete h2 {
+  font-size: clamp(26px, 3vw, 34px);
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 0 0 12px;
+  letter-spacing: -0.4px;
+}
+
+.manchete h2 em {
+  font-style: normal;
+  color: var(--hb-acento);
+}
+
+.manchete p {
+  color: rgba(255, 255, 255, 0.66);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.rodapeMarca {
+  position: relative;
+  font-size: var(--hb-legenda);
+  color: rgba(255, 255, 255, 0.4);
+  animation: subir 400ms 140ms var(--hb-transicao) both;
+}
+
+/* ---------- painel do formulário ---------- */
+.formArea {
+  display: grid;
+  place-items: center;
+  padding: 32px 24px;
+}
+
+.cartao {
+  width: 100%;
+  max-width: 400px;
+  background: var(--hb-superficie);
+  border-radius: var(--hb-raio-card);
+  box-shadow: var(--hb-sombra-2);
+  padding: 36px 32px;
+  animation: subir 350ms 60ms var(--hb-transicao) both;
+}
+
+.titulo {
+  margin: 0 0 4px;
+  font-size: var(--hb-titulo-2);
+  color: var(--hb-primaria);
+  font-weight: 700;
+}
+
+.subtitulo {
+  margin: 0 0 24px;
+  color: var(--hb-texto-suave);
+  font-size: var(--hb-corpo-sm);
+}
+
+.campo {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.campo input {
+  width: 100%;
+  height: 54px;
+  padding: 20px 14px 6px;
+  font: inherit;
+  color: var(--hb-texto);
+  background: var(--hb-superficie);
+  border: 1px solid var(--hb-borda);
+  border-radius: var(--hb-raio-input);
+  transition: border-color var(--hb-transicao-rapida), box-shadow var(--hb-transicao-rapida);
+}
+
+.campo input:hover {
+  border-color: #b9c7d8;
+}
+
+.campo input:focus {
+  outline: none;
+  border-color: var(--hb-acao);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+}
+
+.campo label {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--hb-texto-suave);
+  pointer-events: none;
+  transition: all var(--hb-transicao-rapida);
+}
+
+.campo input:focus + label,
+.campo input:not(:placeholder-shown) + label {
+  top: 14px;
+  font-size: var(--hb-legenda);
+  color: var(--hb-acao);
+}
+
+.campo input:not(:focus):not(:placeholder-shown) + label {
+  color: var(--hb-texto-suave);
+}
+
+.campo input[aria-invalid='true'] {
+  border-color: var(--hb-erro);
+}
+
+.erro {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  background: var(--hb-erro-bg);
+  color: #a50e0e;
+  border-radius: var(--hb-raio-input);
+  padding: 10px 12px;
+  font-size: var(--hb-corpo-sm);
+  line-height: 1.45;
+  margin-bottom: 18px;
+  animation: subir 200ms var(--hb-transicao-rapida) both;
+}
+
+.aviso {
+  background: var(--hb-sucesso-bg);
+  color: #14632c;
+}
+
+.botao {
+  width: 100%;
+  height: var(--hb-toque-min);
+  border: none;
+  border-radius: var(--hb-raio-botao);
+  background: var(--hb-acao);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background var(--hb-transicao-rapida), transform var(--hb-transicao-rapida), box-shadow var(--hb-transicao-rapida);
+}
+
+.botao:hover:not(:disabled) {
+  background: var(--hb-acao-hover);
+  box-shadow: var(--hb-sombra-1);
+}
+
+.botao:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.botao:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.girador {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: girar 700ms linear infinite;
+}
+
+.esqueci {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: var(--hb-corpo-sm);
+  color: var(--hb-acao);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.esqueci:hover {
+  text-decoration: underline;
+}
+
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes girar {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* ---------- mobile ---------- */
+@media (max-width: 860px) {
+  .pagina {
+    grid-template-columns: 1fr;
+  }
+
+  .marca {
+    padding: 28px 24px;
+    min-height: 180px;
+  }
+
+  .manchete,
+  .rodapeMarca {
+    display: none;
+  }
+
+  .formArea {
+    align-items: start;
+    padding-top: 40px;
+  }
+}

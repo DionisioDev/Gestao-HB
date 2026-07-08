@@ -1,7 +1,11 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import type { ReactNode } from 'react';
+import { AuthProvider } from '../lib/auth';
 import '@gestao-hb/ui/tokens.css';
 import './globals.css';
+
+const inter = Inter({ subsets: ['latin'], variable: '--fonte-inter' });
 
 export const metadata: Metadata = {
   title: 'Gestão HB',
@@ -10,8 +14,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="pt-BR">
-      <body>{children}</body>
+    <html lang="pt-BR" className={inter.variable}>
+      <body>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }
