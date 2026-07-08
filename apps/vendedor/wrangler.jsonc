@@ -1,0 +1,10 @@
+// Deploy do PWA do vendedor no Cloudflare Workers (assets estáticos).
+// Deploy command no projeto: npx wrangler deploy -c apps/vendedor/wrangler.jsonc
+{
+  "name": "gestao-hb-vendedor",
+  "compatibility_date": "2026-07-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single_page_application"
+  }
+}
