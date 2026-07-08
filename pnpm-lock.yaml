@@ -94,9 +94,6 @@ importers:
 
   functions:
     dependencies:
-      '@gestao-hb/core':
-        specifier: workspace:*
-        version: link:../packages/core
       firebase-admin:
         specifier: ^13.3.0
         version: 13.10.0
