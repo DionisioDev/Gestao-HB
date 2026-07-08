@@ -123,20 +123,23 @@ service cloud.firestore {
     // ---------- pedidos ----------
     match /pedidos/{pedidoId} {
       allow read: if ehAdmin() || (ehVendedor() && resource.data.vendedorId == meuVendedorId());
-      allow write: if false; // emissão/edição somente via functions
+      allow create, update: if ehAdmin(); // INTERINO: emissão via callable quando houver Functions
+      allow delete: if false; // cancelar, nunca excluir
 
       match /parcelas/{parcelaId} {
         allow read: if ehAdmin()
           || (ehVendedor()
               && get(/databases/$(database)/documents/pedidos/$(pedidoId)).data.vendedorId == meuVendedorId());
-        allow write: if false;
+        allow create, update: if ehAdmin(); // INTERINO
+        allow delete: if false;
       }
     }
 
     // ---------- comissões ----------
     match /comissoes/{id} {
       allow read: if ehAdmin() || (ehVendedor() && resource.data.vendedorId == meuVendedorId());
-      allow write: if false;
+      allow create, update: if ehAdmin(); // INTERINO: só via servidor com Functions
+      allow delete: if false;
     }
 
     match /fechamentosComissao/{id} {
@@ -164,7 +167,8 @@ service cloud.firestore {
     // ---------- config interna ----------
     match /config/{id} {
       allow read: if ehAdmin();
-      allow write: if false;
+      allow create, update: if ehAdmin(); // INTERINO: contador de pedidos via transação no cliente
+      allow delete: if false;
     }
 
     // default deny para qualquer caminho não coberto

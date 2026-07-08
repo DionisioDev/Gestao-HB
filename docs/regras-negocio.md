@@ -95,6 +95,8 @@ comissaoVendedor = round(comissaoEscritorio × pctProporcional / 100)
 
 ## 3. Pagamentos e status do pedido
 
+- **Divisão em N parcelas iguais:** `base = floor(total/N)`; as N−1 primeiras valem `base` e a última vale `total − base×(N−1)` (o resto de centavos vai para a última). Vencimentos: primeira data + intervalo em dias.
+  - Exemplo (vira teste): R$ 100,00 em 3× → **33,33 + 33,33 + 33,34**. R$ 90,00 em 3× → 30,00 + 30,00 + 30,00.
 - Parcela: `aberto → parcial → pago` (`valorRecebido` acumulado; baixa parcial mantém `parcial`).
 - Pedido quitado = todas as parcelas `pago`.
 - Status do pedido no novo sistema: `rascunho → emitido → enviadoIndustria → faturado → entregue → finalizado` + `cancelado` (mapeamento do legado DIGITANDO→rascunho/emitido, EM PRODUÇÃO→enviadoIndustria, ENTREGUE→entregue, PAGO→(derivado das parcelas), FINALIZADO→finalizado).
