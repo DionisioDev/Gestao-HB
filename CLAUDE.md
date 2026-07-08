@@ -43,8 +43,12 @@ Documentos derivados (criados/mantidos pelo agente conforme seção 10 da especi
 
 ## Convenções do monorepo
 
-_[A definir quando a estrutura for criada — atualizar esta seção com layout de pastas e comandos de build/test/lint.]_
+- **pnpm workspaces + Turborepo**, Node 22, TypeScript strict. Estrutura: `apps/admin` (Next.js), `apps/vendedor` (React PWA), `functions/` (Cloud Functions v2), `packages/core` (domínio puro, sem Firebase), `packages/ui`, `packages/firebase`. Detalhes em [docs/arquitetura.md](docs/arquitetura.md).
+- **Comandos:** `pnpm install` · `pnpm build` · `pnpm test` · `pnpm typecheck` (Turbo na raiz; `pnpm --filter @gestao-hb/core test` para um pacote).
+- **Unidades:** dinheiro em **centavos** (inteiro), peso em **miligramas** (inteiro), percentuais decimais (40 = 40%). Arredondamento half-up no centavo, só no fim de cada item — ver [docs/regras-negocio.md](docs/regras-negocio.md).
+- **Regras de negócio só em `packages/core`**, com teste para cada exemplo numérico de `docs/regras-negocio.md`. Apps e functions nunca reimplementam cálculo.
+- Escritas de negócio via Cloud Functions (callable) com validação zod + auditoria; leituras direto do Firestore sob Security Rules.
 
 ## Idioma
 
-Documentação, UI e mensagens de commit em **português (pt-BR)**. Código (identificadores) em inglês ou português consistente — definir na criação do monorepo.
+Documentação, UI, mensagens de commit e **identificadores de domínio em português (pt-BR)** camelCase (`valorGramaCentavos`, `comissaoEscritorio`). Termos técnicos de infraestrutura permanecem em inglês.
