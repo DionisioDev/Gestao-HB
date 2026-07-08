@@ -72,10 +72,10 @@ const MENU: Array<{ rotulo: string; rota: string; Icone: Icone; pronto: boolean 
   { rotulo: 'Painel', rota: '/', Icone: IconePainel, pronto: true },
   { rotulo: 'Indústrias', rota: '/industrias', Icone: IconeIndustria, pronto: true },
   { rotulo: 'Produtos', rota: '/produtos', Icone: IconeProduto, pronto: true },
-  { rotulo: 'Clientes', rota: '/clientes', Icone: IconeCliente, pronto: false },
+  { rotulo: 'Clientes', rota: '/clientes', Icone: IconeCliente, pronto: true },
   { rotulo: 'Vendedores', rota: '/vendedores', Icone: IconeVendedor, pronto: true },
   { rotulo: 'Usuários', rota: '/usuarios', Icone: IconeUsuario, pronto: true },
-  { rotulo: 'Auditoria', rota: '/auditoria', Icone: IconeAuditoria, pronto: false },
+  { rotulo: 'Auditoria', rota: '/auditoria', Icone: IconeAuditoria, pronto: true },
 ];
 
 export default function LayoutPainel({ children }: { children: ReactNode }) {

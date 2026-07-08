@@ -74,12 +74,18 @@ service cloud.firestore {
 
     match /clientes/{clienteId} {
       allow read: if sessaoOk();
-      allow write: if false;
+      allow create, update: if ehAdmin(); // INTERINO: callable quando houver Functions
+      allow delete: if false;
 
       match /contatos/{contatoId} {
         allow read: if sessaoOk();
-        allow write: if false;
+        allow create, update, delete: if ehAdmin(); // INTERINO
       }
+    }
+
+    match /categoriasCliente/{categoriaId} {
+      allow read: if sessaoOk();
+      allow create, update, delete: if ehAdmin(); // INTERINO
     }
 
     match /vendedores/{vendedorId} {

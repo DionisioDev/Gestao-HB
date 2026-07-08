@@ -109,6 +109,63 @@ export const PrecoProdutoSchema = z.object({
 });
 export type PrecoProduto = z.infer<typeof PrecoProdutoSchema>;
 
+export const STATUS_CLIENTE = [
+  'ativo',
+  'inativo',
+  'juridico',
+  'potencial',
+  'prospectado',
+  'semCredito',
+  'fechou',
+  'lead',
+] as const;
+export type StatusCliente = (typeof STATUS_CLIENTE)[number];
+
+export const ClienteSchema = z.object({
+  tipoPessoa: z.enum(['PJ', 'PF']),
+  razaoSocial: z.string().trim().min(1, 'Informe a razão social / nome').max(120),
+  fantasia: z.string().trim().max(120).optional(),
+  cnpjCpf: z.string().trim().max(18).optional(),
+  inscrEstadual: z.string().trim().max(20).optional(),
+  endereco: EnderecoSchema.optional(),
+  enderecoCobranca: z.string().trim().max(300).optional(),
+  enderecoEntrega: z.string().trim().max(300).optional(),
+  emails: z
+    .object({
+      geral: z.string().trim().email('E-mail inválido').optional().or(z.literal('')),
+      financeiro: z.string().trim().email('E-mail financeiro inválido').optional().or(z.literal('')),
+      nfe: z.string().trim().email('E-mail NFe inválido').optional().or(z.literal('')),
+    })
+    .optional(),
+  telefone: z.string().trim().max(20).optional(),
+  whatsapp: z.string().trim().max(20).optional(),
+  pix: z.string().trim().max(120).optional(),
+  vendedorId: z.string().optional(),
+  status: z.enum(STATUS_CLIENTE),
+  categoriaId: z.string().optional(),
+  rede: z.string().trim().max(60).optional(),
+  segmento: z.string().trim().max(60).optional(),
+  limiteCreditoCentavos: z.number().int().min(0).optional(),
+  observacoes: z.string().trim().max(1000).optional(),
+});
+export type Cliente = z.infer<typeof ClienteSchema>;
+
+export const ContatoClienteSchema = z.object({
+  nome: z.string().trim().min(1, 'Informe o nome').max(80),
+  email: z.string().trim().email('E-mail inválido').optional().or(z.literal('')),
+  celular: z.string().trim().max(20).optional(),
+  whatsapp: z.string().trim().max(20).optional(),
+  aniversario: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Data inválida').optional().or(z.literal('')),
+  observacoes: z.string().trim().max(300).optional(),
+});
+export type ContatoCliente = z.infer<typeof ContatoClienteSchema>;
+
+export const CategoriaClienteSchema = z.object({
+  nome: z.string().trim().min(1, 'Informe o nome').max(60),
+  codigo: z.string().trim().max(20).optional(),
+});
+export type CategoriaCliente = z.infer<typeof CategoriaClienteSchema>;
+
 export const ValorGramaSchema = z.object({
   industriaId: z.string().min(1),
   tabelaId: z.string().min(1),
