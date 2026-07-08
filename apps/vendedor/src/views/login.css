@@ -1,0 +1,187 @@
+/* Login mobile-first do vendedor — mesma identidade do admin (seção 6). */
+.login {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-topo {
+  background:
+    radial-gradient(120% 100% at 10% 0%, #16385a 0%, transparent 60%),
+    var(--hb-primaria);
+  color: #fff;
+  padding: calc(28px + env(safe-area-inset-top)) 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.login-selo {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--hb-primaria);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 20px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12);
+}
+
+.login-nome {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.login-sub {
+  font-size: var(--hb-legenda);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.login-corpo {
+  flex: 1;
+  display: grid;
+  place-items: start center;
+  padding: 28px 16px;
+}
+
+.login-cartao {
+  width: 100%;
+  max-width: 380px;
+  background: var(--hb-superficie);
+  border-radius: var(--hb-raio-card);
+  box-shadow: var(--hb-sombra-2);
+  padding: 28px 24px;
+  animation: subirLogin 300ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.login-cartao h1 {
+  margin: 0 0 4px;
+  font-size: var(--hb-titulo-2);
+  color: var(--hb-primaria);
+}
+
+.login-descricao {
+  margin: 0 0 20px;
+  color: var(--hb-texto-suave);
+  font-size: var(--hb-corpo-sm);
+}
+
+.login-campo {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.login-campo input {
+  width: 100%;
+  height: 54px;
+  padding: 20px 14px 6px;
+  font: inherit;
+  border: 1px solid var(--hb-borda);
+  border-radius: var(--hb-raio-input);
+  transition: border-color var(--hb-transicao-rapida), box-shadow var(--hb-transicao-rapida);
+}
+
+.login-campo input:focus {
+  outline: none;
+  border-color: var(--hb-acao);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
+}
+
+.login-campo label {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--hb-texto-suave);
+  pointer-events: none;
+  transition: all var(--hb-transicao-rapida);
+}
+
+.login-campo input:focus + label,
+.login-campo input:not(:placeholder-shown) + label {
+  top: 15px;
+  font-size: var(--hb-legenda);
+  color: var(--hb-acao);
+}
+
+.login-erro {
+  background: var(--hb-erro-bg);
+  color: #a50e0e;
+  border-radius: var(--hb-raio-input);
+  padding: 10px 12px;
+  font-size: var(--hb-corpo-sm);
+  line-height: 1.45;
+  margin-bottom: 16px;
+}
+
+.login-aviso {
+  background: var(--hb-sucesso-bg);
+  color: #14632c;
+}
+
+.login-botao {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: var(--hb-raio-botao);
+  background: var(--hb-acao);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background var(--hb-transicao-rapida), transform var(--hb-transicao-rapida);
+}
+
+.login-botao:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.login-botao:disabled {
+  opacity: 0.7;
+}
+
+.login-girador {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: girarLogin 700ms linear infinite;
+}
+
+.login-esqueci {
+  display: block;
+  margin: 16px auto 0;
+  background: none;
+  border: none;
+  color: var(--hb-acao);
+  font: inherit;
+  font-size: var(--hb-corpo-sm);
+  padding: 8px;
+  cursor: pointer;
+}
+
+@keyframes subirLogin {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes girarLogin {
+  to {
+    rotate: 360deg;
+  }
+}

@@ -1,29 +1,45 @@
-import { StatusChip } from '@gestao-hb/ui';
+import { Navigate, Route, HashRouter, Routes } from 'react-router-dom';
+import { AuthProvider, useAuth } from './lib/auth';
+import { SnackbarProvider } from './lib/snackbar';
+import { Home } from './views/Home';
+import { Login } from './views/Login';
 
-// Placeholder da fundação — o fluxo de pedido mobile-first entra na Fase 2,
-// criado com a skill de frontend (seção 8 da especificação).
+function AreaProtegida() {
+  const { status } = useAuth();
+  if (status === 'carregando') {
+    return (
+      <div style={{ minHeight: '100dvh', display: 'grid', placeItems: 'center' }} role="status" aria-label="Carregando">
+        <span
+          style={{
+            width: 34,
+            height: 34,
+            borderRadius: '50%',
+            border: '3px solid var(--hb-borda)',
+            borderTopColor: 'var(--hb-acao)',
+            animation: 'girarApp 700ms linear infinite',
+            display: 'inline-block',
+          }}
+        />
+        <style>{`@keyframes girarApp { to { rotate: 360deg; } }`}</style>
+      </div>
+    );
+  }
+  if (status === 'deslogado') return <Navigate to="/login" replace />;
+  return <Home />;
+}
+
 export function App() {
   return (
-    <main style={{ display: 'grid', placeItems: 'center', minHeight: '100dvh', padding: 16 }}>
-      <div
-        style={{
-          background: 'var(--hb-superficie)',
-          borderRadius: 'var(--hb-raio-card)',
-          boxShadow: 'var(--hb-sombra-1)',
-          padding: '28px 24px',
-          textAlign: 'center',
-          width: '100%',
-          maxWidth: 360,
-        }}
-      >
-        <h1 style={{ color: 'var(--hb-primaria)', fontSize: 'var(--hb-titulo-2)', margin: '0 0 8px' }}>
-          Gestão HB — Vendedor
-        </h1>
-        <p style={{ color: 'var(--hb-texto-suave)', margin: '0 0 16px' }}>
-          PWA em construção. Instalável e com suporte offline.
-        </p>
-        <StatusChip tom="atencao">Aguardando Fase 2</StatusChip>
-      </div>
-    </main>
+    <AuthProvider>
+      <SnackbarProvider>
+        <HashRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<AreaProtegida />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </HashRouter>
+      </SnackbarProvider>
+    </AuthProvider>
   );
 }
