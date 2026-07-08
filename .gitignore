@@ -12,6 +12,9 @@ serviceAccount*.json
 dist/
 build/
 .next/
+.turbo/
+dev-dist/
+*.tsbuildinfo
 
 # Ferramentas locais
 .playwright/
