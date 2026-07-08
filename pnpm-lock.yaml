@@ -129,6 +129,9 @@ importers:
 
   packages/firebase:
     dependencies:
+      '@gestao-hb/core':
+        specifier: workspace:*
+        version: link:../core
       firebase:
         specifier: ^11.6.0
         version: 11.10.0

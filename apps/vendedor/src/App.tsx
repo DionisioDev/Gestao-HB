@@ -1,10 +1,12 @@
+import type { ReactNode } from 'react';
 import { Navigate, Route, HashRouter, Routes } from 'react-router-dom';
 import { AuthProvider, useAuth } from './lib/auth';
 import { SnackbarProvider } from './lib/snackbar';
 import { Home } from './views/Home';
 import { Login } from './views/Login';
+import { NovoPedido } from './views/NovoPedido';
 
-function AreaProtegida() {
+function AreaProtegida({ children }: { children: ReactNode }) {
   const { status } = useAuth();
   if (status === 'carregando') {
     return (
@@ -25,7 +27,7 @@ function AreaProtegida() {
     );
   }
   if (status === 'deslogado') return <Navigate to="/login" replace />;
-  return <Home />;
+  return <>{children}</>;
 }
 
 export function App() {
@@ -35,7 +37,22 @@ export function App() {
         <HashRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<AreaProtegida />} />
+            <Route
+              path="/"
+              element={
+                <AreaProtegida>
+                  <Home />
+                </AreaProtegida>
+              }
+            />
+            <Route
+              path="/novo"
+              element={
+                <AreaProtegida>
+                  <NovoPedido />
+                </AreaProtegida>
+              }
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </HashRouter>

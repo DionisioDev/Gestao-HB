@@ -2,6 +2,7 @@ import type { StatusPedido } from '@gestao-hb/core';
 import { formatarCentavos, rotuloStatusPedido, StatusChip, tomStatusPedido } from '@gestao-hb/ui';
 import { collection, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { fb } from '../lib/firebase';
 import './home.css';
@@ -19,6 +20,7 @@ interface PedidoResumo {
 
 export function Home() {
   const { nome, vendedorId, sair } = useAuth();
+  const navegar = useNavigate();
   const [pedidos, setPedidos] = useState<PedidoResumo[] | null>(null);
 
   useEffect(() => {
@@ -85,11 +87,7 @@ export function Home() {
         )}
       </main>
 
-      <button
-        className="home-fab"
-        aria-label="Novo pedido"
-        onClick={() => alert('Emissão mobile em construção — próximo ciclo da Fase 2.')}
-      >
+      <button className="home-fab" aria-label="Novo pedido" onClick={() => navegar('/novo')}>
         +
       </button>
     </div>

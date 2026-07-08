@@ -1,4 +1,5 @@
 export { configFirebase } from './config.js';
+export * from './emissao.js';
 
 import { getApps, initializeApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app';
 import { connectAuthEmulator, getAuth, type Auth } from 'firebase/auth';

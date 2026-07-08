@@ -123,14 +123,21 @@ service cloud.firestore {
     // ---------- pedidos ----------
     match /pedidos/{pedidoId} {
       allow read: if ehAdmin() || (ehVendedor() && resource.data.vendedorId == meuVendedorId());
-      allow create, update: if ehAdmin(); // INTERINO: emissão via callable quando houver Functions
+      // INTERINO: vendedor emite o próprio pedido; edição/status só admin.
+      // Com Functions, emissão vira callable com revalidação de preços no servidor.
+      allow create: if ehAdmin()
+        || (ehVendedor() && request.resource.data.vendedorId == meuVendedorId());
+      allow update: if ehAdmin();
       allow delete: if false; // cancelar, nunca excluir
 
       match /parcelas/{parcelaId} {
         allow read: if ehAdmin()
           || (ehVendedor()
               && get(/databases/$(database)/documents/pedidos/$(pedidoId)).data.vendedorId == meuVendedorId());
-        allow create, update: if ehAdmin(); // INTERINO
+        allow create: if ehAdmin()
+          || (ehVendedor()
+              && get(/databases/$(database)/documents/pedidos/$(pedidoId)).data.vendedorId == meuVendedorId());
+        allow update: if ehAdmin(); // baixa de pagamento é do financeiro
         allow delete: if false;
       }
     }
@@ -138,7 +145,11 @@ service cloud.firestore {
     // ---------- comissões ----------
     match /comissoes/{id} {
       allow read: if ehAdmin() || (ehVendedor() && resource.data.vendedorId == meuVendedorId());
-      allow create, update: if ehAdmin(); // INTERINO: só via servidor com Functions
+      // INTERINO: a emissão do vendedor grava a própria comissão prevista (pcts vêm da
+      // matriz, que só o admin edita). Com Functions, criação exclusiva do servidor.
+      allow create: if ehAdmin()
+        || (ehVendedor() && request.resource.data.vendedorId == meuVendedorId());
+      allow update: if ehAdmin();
       allow delete: if false;
     }
 
@@ -156,18 +167,18 @@ service cloud.firestore {
     }
 
     // ---------- auditoria: append-only; só admin lê ----------
-    // INTERINO (sem Functions): admin cria registros do próprio uid; update/delete NUNCA.
+    // INTERINO (sem Functions): usuário logado cria registros do próprio uid; update/delete NUNCA.
     // Com Functions ativas, criação volta a ser exclusiva do servidor (especificação §2.8).
     match /auditoria/{id} {
       allow read: if ehAdmin();
-      allow create: if ehAdmin() && request.resource.data.usuarioId == request.auth.uid;
+      allow create: if sessaoOk() && request.resource.data.usuarioId == request.auth.uid;
       allow update, delete: if false;
     }
 
     // ---------- config interna ----------
     match /config/{id} {
-      allow read: if ehAdmin();
-      allow create, update: if ehAdmin(); // INTERINO: contador de pedidos via transação no cliente
+      // INTERINO: a transação de emissão (admin OU vendedor) incrementa o contador
+      allow read, create, update: if sessaoOk();
       allow delete: if false;
     }
 
