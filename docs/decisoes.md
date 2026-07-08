@@ -37,3 +37,27 @@ Decisões fechadas migram da tabela da seção 5 de [especificacao.md](especific
 - **Data:** 07/07/2026 (confirmado pelo cliente)
 - **Decisão:** o cálculo pelo **valor do grama** aplica-se somente aos itens de **INOVE** e **TENDENZE**. Todas as demais indústrias usam **preço tabelado** (valores fixos definidos pelas próprias indústrias, importados/cadastrados por tabela). As tabelas "-BRUTO" vistas no sistema atual **não** são preço por grama — são apenas mais uma tabela de valores fixos.
 - **Consequências:** o modelo de precificação passa a ser um atributo da indústria (ou da tabela): `por_grama` (peso × valor do grama, com histórico de vigência — seção 2.2 da especificação) vs `tabelado` (preço fixo por item × tabela). O pacote compartilhado de regras de negócio implementa as duas estratégias; o requisito de peso confiável por item vale só para Inove/Tendenze.
+
+## ADR-006 — Preço travado na emissão do pedido
+
+- **Data:** 07/07/2026
+- **Decisão:** o pedido **congela** os preços (e o valor do grama vigente) no momento da emissão; pedidos antigos nunca mudam de valor. Orçamento convertido em pedido pergunta a política (manter preços do orçamento ou atualizar para os atuais — mesmo comportamento do sistema legado).
+- **Consequências:** `Pedido.valor_grama_congelado` no modelo; financeiro e comissão calculam sempre sobre valores congelados; recotação de pedido não faturado só por edição explícita com auditoria.
+
+## ADR-007 — Romaneios no Drive em `/Romaneios/{Indústria}/{Ano}/{Mês}/`
+
+- **Data:** 07/07/2026
+- **Decisão:** estrutura por indústria → ano → mês; arquivo nomeado com nº do pedido + cliente (mantendo o padrão atual, ex.: `P01760-Cliente.pdf`).
+- **Consequências:** o serviço de upload resolve/cria a hierarquia automaticamente; o registro `Romaneio` guarda `arquivo_drive_id` e URL.
+
+## ADR-008 — App do vendedor: PWA com suporte offline
+
+- **Data:** 07/07/2026
+- **Decisão:** PWA mobile-first (instalável pelo navegador), com **suporte offline** via persistência do Firestore — o vendedor monta pedido sem sinal e sincroniza depois (fecha também a decisão nº 7 da seção 5).
+- **Consequências:** uma única base TypeScript no monorepo; rascunho de pedido preservado localmente inclusive com sessão expirada (seção 7 da especificação); sem publicação em lojas.
+
+## ADR-009 — Migração: cadastros + pedidos/títulos em aberto
+
+- **Data:** 07/07/2026
+- **Decisão:** migrar do SuasVendas os **cadastros** (clientes, contatos, indústrias, produtos/tabelas de preço) e apenas **pedidos e títulos financeiros em aberto**. Histórico completo permanece no SuasVendas para consulta enquanto a assinatura durar.
+- **Consequências:** exportações CSV/Excel do sistema atual (3ª rodada da análise) alimentam scripts de importação; dados legados inconsistentes (rascunhos vazios, peso zerado, produto duplicado por tabela) são normalizados na importação, não replicados.

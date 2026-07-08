@@ -55,7 +55,7 @@ Sistema de gestão para representação comercial no setor de joias/prata, subst
   - **Como é hoje:** no SuasVendas não há motor de grama — o "produto" INOVE é cadastrado como **1 grama** (ex.: PAN1056, nome "1.0") e o preço do registro **é o próprio valor do grama** daquela tabela/teor (VENDAS-900: R$ 46,04; HERI-900: R$ 44,12; HERI-700: R$ 38,04; VENDAS-700: R$ 39,62). Atualizar o grama = reimportar a tabela. `[CONFIRMAR: no pedido, a quantidade é lançada em gramas?]`
 - Valor do grama configurável e atualizável (a prata oscila): manter **histórico de valores do grama** com data de vigência, para que pedidos antigos preservem o preço da época.
 - Ao atualizar o valor do grama, o sistema recalcula os preços de tabela dos itens automaticamente.
-- Decisão em aberto: preço do pedido é travado no momento da emissão (recomendado) ou acompanha o grama do dia? `[DECIDIR]`
+- **Decidido (ADR-006):** preço do pedido é **travado no momento da emissão** (o pedido congela o valor do grama vigente); recotação só por edição explícita com auditoria.
 
 ### 2.3 Pedidos e Orçamentos
 
@@ -64,7 +64,7 @@ Sistema de gestão para representação comercial no setor de joias/prata, subst
 - Status do pedido — **fluxo real do sistema atual:** `DIGITANDO → EM PRODUÇÃO → ENTREGUE → PAGO → FINALIZADO` + `CANCELADO` (status é dado configurável: nome, cor, sequência). Nota: ENTREGUE antes de PAGO — venda a prazo. Mapear para o novo fluxo na definição do módulo de pedidos.
 - Campos do pedido — **confirmados no sistema atual:** cliente + comprador (contato), vendedor, indústria, data de venda, **comissão (%) no pedido e por item**, base de cálculo de comissão, itens (código, descrição, R$ tabela, preço final, qtde, qtde faturada), frete/acréscimo/desconto, totais (peso bruto/líquido, IPI, ST), **parcelas de recebimento embutidas** (data prevista, valor, forma, conta, status), condição de pagamento, nº pedido ERP (nº na representada), status, código de rastreio, observações (pública/privada), endereços de entrega/cobrança, datas (envio, entrega, fatura), **grade de faturamento** (NF-e, duplicatas, previsão de comissão), anexos.
 - **Dor a não replicar:** no sistema atual, abrir a tela de emissão já cria um rascunho numerado no banco (pedidos vazios poluem a listagem e a numeração).
-- **Romaneios:** documentos do romaneio arquivados automaticamente no **Google Drive**, organizados por pasta (sugestão: `/Romaneios/{Indústria}/{Ano}/{Mês}/`). `[DECIDIR: estrutura de pastas]`
+- **Romaneios:** documentos do romaneio arquivados automaticamente no **Google Drive**, em `/Romaneios/{Indústria}/{Ano}/{Mês}/`, arquivo nomeado com nº do pedido + cliente (ADR-007).
 - Vendedor enxerga **somente os próprios pedidos**.
 
 ### 2.4 Financeiro (contas a receber sobre pedidos)
@@ -213,12 +213,12 @@ Objetivo: mapear o sistema web atual e preencher os `[A PREENCHER]` deste docume
 |---|---|---|---|
 | 1 | Regra de comissão | **Resolvida: configurável por indústria.** Regime A (mensal fixo, dia 15) p/ Spart e Anéis Brasil; Regime B (pós-recebimento) p/ Inove, Tendenze e Zarrara | ✅ Fechada |
 | 1b | Estorno de comissão em cancelamento/devolução (Regime A) | abatimento no fechamento seguinte / outro | Aberta |
-| 2 | Preço travado na emissão do pedido ou grama do dia | travado (recomendado) / dinâmico | Aberta |
-| 3 | Estrutura de pastas do Drive para romaneios | por indústria/ano/mês | Aberta |
-| 4 | Plataforma mobile | PWA / app nativo | Aberta |
-| 5 | Migração de dados do sistema atual | importar histórico ou começar limpo | Aberta |
+| 2 | Preço travado na emissão do pedido ou grama do dia | **Resolvida: travado na emissão** — ADR-006 | ✅ Fechada (07/07/2026) |
+| 3 | Estrutura de pastas do Drive para romaneios | **Resolvida: `/Romaneios/{Indústria}/{Ano}/{Mês}/`** — ADR-007 | ✅ Fechada (07/07/2026) |
+| 4 | Plataforma mobile | **Resolvida: PWA** — ADR-008 | ✅ Fechada (07/07/2026) |
+| 5 | Migração de dados do sistema atual | **Resolvida: cadastros + pedidos/títulos em aberto** — ADR-009 | ✅ Fechada (07/07/2026) |
 | 6 | Stack tecnológica | **Resolvida: Firebase (Firestore/Auth/Storage) + monorepo + backend Node/TypeScript, com foco em segurança das informações** — ver ADR-003 em `docs/decisoes.md` | ✅ Fechada (07/07/2026) |
-| 7 | Suporte offline no app do vendedor | sim (Firestore offline) / não | Aberta |
+| 7 | Suporte offline no app do vendedor | **Resolvida: sim (Firestore offline)** — incluído no ADR-008 | ✅ Fechada (07/07/2026) |
 
 ---
 
@@ -280,7 +280,7 @@ O cliente cogita **.NET**; ambos os caminhos são viáveis, com trade-offs:
 
 ### Frontend
 - **Web admin:** React (Next.js) com Material Design 3 (ver seção 6).
-- **App do vendedor:** PWA mobile-first com **suporte offline** (persistência do Firestore) — vendedor consegue montar pedido em campo sem sinal e sincronizar depois. `[Confirmar necessidade de offline]`
+- **App do vendedor:** PWA mobile-first com **suporte offline** (persistência do Firestore) — vendedor consegue montar pedido em campo sem sinal e sincronizar depois. **Confirmado (ADR-008).**
 
 ### Segurança (prioridade do projeto)
 - **Autenticação obrigatória em toda a API:** nenhum endpoint público; verificação de token do Firebase Auth (Bearer JWT) em todas as requisições.
