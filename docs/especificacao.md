@@ -27,30 +27,32 @@ Sistema de gestão para representação comercial no setor de joias/prata, subst
 ### 2.1 Cadastros
 
 #### Indústrias (fornecedores)
-- Cadastro de múltiplas indústrias. **Indústrias representadas hoje:** Spart, Anéis Brasil, Inove, Tendenze e Zarrara.
-- Cada indústria define seu **regime de comissionamento** (ver seção 2.5).
-- Dados: razão social, nome fantasia, CNPJ, contatos, condições comerciais, prazo de entrega. `[A PREENCHER: campos exatos do sistema atual]`
+- Cadastro de múltiplas indústrias. **Indústrias no novo sistema (ADR-004):** ANEIS BRASIL, BRILHUS, CAMADI, GENUELE, IMPORTADOS, INOVE, PRONTA ENTREGA, SPART, TENDENZE, ZARRARA e ZARRARA LUXO (11 — todas as do sistema atual, exceto "Hb Joias"). Suportar indústrias "lógicas" (agrupadores de catálogo sem dados fiscais, ex.: BRILHUS, PRONTA ENTREGA).
+- Cada indústria define seu **regime de comissionamento** (ver seção 2.5) e seu **modelo de precificação** (`por_grama` — só Inove e Tendenze — ou `tabelado`; ADR-005).
+- Dados (campos do sistema atual): razão social, nome fantasia, CNPJ, Inscr. Estadual, endereço completo (endereço, bairro, cidade, UF, CEP), telefone, e-mail, PIX, status ativo/inativo. Acrescentar no novo: contatos, condições comerciais, prazo de entrega.
 - Cada indústria pode ter **configurações próprias de teor de prata** (ex.: 925 e 950) e **valor do grama** próprio.
 
 #### Itens (produtos)
 - Vinculados a uma indústria.
 - Um mesmo item pode existir em **teores diferentes de prata** (ex.: dois teores dentro da mesma indústria), com preços distintos.
-- Cada item pode ter **até 4 valores de tabela** (tabelas de preço/comissão diferentes — ex.: Tabela A/B/C/D, atacado/varejo, prazo/à vista). `[A PREENCHER: confirmar o que diferencia cada tabela no sistema atual]`
+- Cada item pode ter **até 4 valores de tabela**. **No sistema atual**, as tabelas diferenciam **teor** (700/900/925), **canal/segmento de cliente** (VENDAS, HERI, ESPECIAL) e variações (ex.: "-BRUTO", "Prata 700 - 10% off") — e o produto é **duplicado** por tabela (108 mil registros). No novo sistema: produto único + matriz produto × tabela.
 - **Fotos dos itens:** importadas dos sistemas/catálogos das indústrias, para uso em orçamentos e no catálogo interno.
 - Dados sugeridos: código do item (código da indústria + código interno), descrição, peso em gramas, teor, categoria, foto(s), status ativo/inativo.
 
 #### Vendedores
 - Cadastro com dados pessoais/comerciais, região de atuação, percentuais de comissão.
 - Vínculo com perfil de permissões (ver seção 2.6).
-- Percentual de comissão pode variar por **indústria**, por **tabela de preço** e/ou por **vendedor**. `[A PREENCHER: confirmar a regra exata usada hoje]`
+- Percentual de comissão: **confirmado no sistema atual** — o cadastro do vendedor tem uma **matriz "indústrias que este vendedor atenderá"**, cada linha com indústria × tabela de preço (ou "Todas") × **Comissão Proporcional (%)** (proporção da comissão do escritório repassada ao vendedor; hoje 40% em todas as linhas) × Acréscimo de Tabela (%) × "Pode alterar preço?" × Limite de Desconto. Essa matriz também é a **permissão de tabela** do vendedor.
 
 #### Clientes
-- `[A PREENCHER: o sistema atual tem cadastro de clientes? Campos, vínculo com vendedor/região?]`
+- **Sim — cadastro central no sistema atual (156 clientes, PJ e PF com fluxos separados).** Campos: razão social, nome fantasia, CNPJ/CPF, Inscrições, endereço + **endereços de cobrança e entrega separados**, cidade/UF, 3 e-mails (geral, financeiro, NFe), telefones, PIX, **vendedor atribuído**, status (`Ativo | Inativo | Jurídico | Potencial | Prospectado | Sem Crédito | Fechou | Lead`), categoria, rede de cliente, matriz/filial, limite de crédito, segmento, observações. Calculados: curva ABC, dias sem comprar, ranking, previsão de próxima compra. Contatos (compradores) são entidade vinculada ao cliente.
 
 ### 2.2 Precificação (valor do grama)
 
+- **Escopo (ADR-005):** precificação por grama vale **apenas para INOVE e TENDENZE**; as demais indústrias usam preço tabelado fixo por item.
 - O sistema deve calcular preços **pelo valor do grama** internamente:
-  - `preço do item = peso (g) × valor do grama (por teor/indústria/tabela) × fatores` `[A PREENCHER: fórmula exata usada hoje — existe multiplicador por tabela? margem? fator de mão de obra?]`
+  - `preço do item = peso (g) × valor do grama (por teor/indústria/tabela) × fatores`
+  - **Como é hoje:** no SuasVendas não há motor de grama — o "produto" INOVE é cadastrado como **1 grama** (ex.: PAN1056, nome "1.0") e o preço do registro **é o próprio valor do grama** daquela tabela/teor (VENDAS-900: R$ 46,04; HERI-900: R$ 44,12; HERI-700: R$ 38,04; VENDAS-700: R$ 39,62). Atualizar o grama = reimportar a tabela. `[CONFIRMAR: no pedido, a quantidade é lançada em gramas?]`
 - Valor do grama configurável e atualizável (a prata oscila): manter **histórico de valores do grama** com data de vigência, para que pedidos antigos preservem o preço da época.
 - Ao atualizar o valor do grama, o sistema recalcula os preços de tabela dos itens automaticamente.
 - Decisão em aberto: preço do pedido é travado no momento da emissão (recomendado) ou acompanha o grama do dia? `[DECIDIR]`
@@ -59,8 +61,9 @@ Sistema de gestão para representação comercial no setor de joias/prata, subst
 
 - **Emissão pelo vendedor no app (mobile):** seleção de cliente, indústria, itens (com foto), quantidades, tabela de preço aplicável ao seu perfil.
 - **Orçamentos:** mesma estrutura do pedido, com fotos dos itens, exportável/compartilhável (PDF/WhatsApp) para o cliente. Orçamento pode ser convertido em pedido.
-- Status do pedido (proposta inicial): `Orçamento → Emitido → Enviado à indústria → Faturado → Entregue → Cancelado`. `[A PREENCHER: fluxo de status real do sistema atual]`
-- Campos do pedido: cliente, vendedor, indústria, itens/quantidades/preços, condição de pagamento, prazo, transportadora, observações. `[A PREENCHER]`
+- Status do pedido — **fluxo real do sistema atual:** `DIGITANDO → EM PRODUÇÃO → ENTREGUE → PAGO → FINALIZADO` + `CANCELADO` (status é dado configurável: nome, cor, sequência). Nota: ENTREGUE antes de PAGO — venda a prazo. Mapear para o novo fluxo na definição do módulo de pedidos.
+- Campos do pedido — **confirmados no sistema atual:** cliente + comprador (contato), vendedor, indústria, data de venda, **comissão (%) no pedido e por item**, base de cálculo de comissão, itens (código, descrição, R$ tabela, preço final, qtde, qtde faturada), frete/acréscimo/desconto, totais (peso bruto/líquido, IPI, ST), **parcelas de recebimento embutidas** (data prevista, valor, forma, conta, status), condição de pagamento, nº pedido ERP (nº na representada), status, código de rastreio, observações (pública/privada), endereços de entrega/cobrança, datas (envio, entrega, fatura), **grade de faturamento** (NF-e, duplicatas, previsão de comissão), anexos.
+- **Dor a não replicar:** no sistema atual, abrir a tela de emissão já cria um rascunho numerado no banco (pedidos vazios poluem a listagem e a numeração).
 - **Romaneios:** documentos do romaneio arquivados automaticamente no **Google Drive**, organizados por pasta (sugestão: `/Romaneios/{Indústria}/{Ano}/{Mês}/`). `[DECIDIR: estrutura de pastas]`
 - Vendedor enxerga **somente os próprios pedidos**.
 
@@ -69,7 +72,7 @@ Sistema de gestão para representação comercial no setor de joias/prata, subst
 - Por pedido, registrar:
   - **Status de pagamento:** em aberto, parcial, pago.
   - **Como foi pago:** forma de pagamento (boleto, pix, transferência, etc.) e **quando** (data de cada pagamento/parcela).
-  - Suporte a **parcelas** (ex.: 30/60/90). `[A PREENCHER: o sistema atual controla parcelas? Como?]`
+  - Suporte a **parcelas** (ex.: 30/60/90). **Sistema atual: sim** — parcelas embutidas no pedido ("Dividir Parcelas" automático) e títulos no contas a receber com descrição "1 de N", forma de pagamento (19 tipos, incl. PIX/boleto/duplicata), conta bancária, recebimento parcial e geração de boleto/recibo. **O pedido também gera automaticamente o título "Comissão de Pedido"** (comissão do escritório a receber da indústria, parcela a parcela).
 - **Previsão de comissão** calculada automaticamente a partir do pedido (valor × % de comissão aplicável).
 - Flag de **comissão paga** (por pedido e/ou por fechamento — ver 2.5).
 - Regra em aberto: comissão é devida sobre pedido **faturado** ou sobre pedido **pago pelo cliente**? `[DECIDIR — impacta todo o módulo]`
@@ -108,7 +111,7 @@ Implicações no sistema:
 | Comissões — previsão/histórico próprios | ✅ | ✅ |
 | Emitir pedidos/orçamentos | ✅ | ✅ |
 
-- Permissão de tabela é **por vendedor** (ex.: vendedor X só vê tabelas A e B). `[A PREENCHER: confirmar granularidade — por vendedor, por grupo de vendedores, por indústria?]`
+- Permissão de tabela é **por vendedor** — confirmado: no sistema atual é a matriz **vendedor × indústria × tabela** no cadastro do vendedor (mesma estrutura que define a comissão proporcional). Complementarmente há permissões finas por módulo (Acessar/Incluir/Alterar/Excluir + "apenas registros criados por ele") e restrição opcional por região.
 - Prever perfis adicionais futuros (fornecedor, financeiro, gerente).
 
 #### Área de usuários (administração)
@@ -121,7 +124,7 @@ Implicações no sistema:
 ### 2.7 Integrações
 
 - **Google Drive:** upload automático dos documentos de romaneio; autenticação OAuth com a conta do escritório. `[DECIDIR: conta única do escritório ou por usuário]`
-- **Fotos dos itens das indústrias:** importação dos catálogos/sistemas das indústrias. `[A PREENCHER: como as fotos são obtidas hoje? URL pública, portal com login, envio manual? Isso define se dá para automatizar ou se será upload/importação em lote]`
+- **Fotos dos itens das indústrias:** **como é hoje** — não há integração automática: upload de **ZIP por indústria** com vínculo por 5 chaves possíveis (código do produto, EAN, código original, referência, referência de agrupamento) ou URL/arrastar-e-soltar no produto individual. O novo sistema deve priorizar **importação em lote (ZIP/planilha)** com as mesmas chaves de vínculo; automação por API fica para depois (a Tendenze tem API ConectaVenda — avaliar na Fase 5).
 - Futuras: WhatsApp (envio de orçamento), emissão de PDF de pedido/orçamento.
 
 ### 2.8 Auditoria (lastro de ações)

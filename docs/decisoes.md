@@ -25,3 +25,15 @@ Decisões fechadas migram da tabela da seção 5 de [especificacao.md](especific
 - **Motivação:** integração de 1ª classe com Firebase (Admin SDK, Cloud Functions, triggers do Firestore), tipos e regras de negócio compartilhados de ponta a ponta numa única linguagem, hospedagem serverless com escala a zero (custo baixo para o porte do projeto).
 - **Condição imposta pelo cliente:** **segurança das informações é prioridade inegociável** — toda a seção 7 da especificação (auth obrigatória, sessão 24h, autorização em camadas, Security Rules, App Check, Secret Manager, validação de entrada, rate limiting, auditoria append-only) vale como requisito, não como sugestão. Cada endpoint novo passa por revisão de segurança.
 - **Consequências:** `docs/arquitetura.md` (a criar) detalhará a estrutura do monorepo, as coleções do Firestore e a estratégia de Security Rules.
+
+## ADR-004 — Escopo de indústrias: as 11 do sistema atual (todas menos "Hb Joias")
+
+- **Data:** 07/07/2026 (confirmado pelo cliente)
+- **Decisão:** entram no novo sistema **todas as indústrias do SuasVendas exceto "Hb Joias"**: ANEIS BRASIL, BRILHUS, CAMADI, GENUELE, IMPORTADOS, INOVE, PRONTA ENTREGA, SPART, TENDENZE, ZARRARA e ZARRARA LUXO. A especificação citava 5; o levantamento revelou o conjunto completo.
+- **Consequências:** o cadastro de indústrias precisa aceitar tanto indústrias com dados fiscais completos quanto "indústrias lógicas" (agrupadores de catálogo, sem CNPJ). Migração de dados considera 11 catálogos.
+
+## ADR-005 — Precificação: por grama apenas em Inove e Tendenze; demais por tabela fixa
+
+- **Data:** 07/07/2026 (confirmado pelo cliente)
+- **Decisão:** o cálculo pelo **valor do grama** aplica-se somente aos itens de **INOVE** e **TENDENZE**. Todas as demais indústrias usam **preço tabelado** (valores fixos definidos pelas próprias indústrias, importados/cadastrados por tabela). As tabelas "-BRUTO" vistas no sistema atual **não** são preço por grama — são apenas mais uma tabela de valores fixos.
+- **Consequências:** o modelo de precificação passa a ser um atributo da indústria (ou da tabela): `por_grama` (peso × valor do grama, com histórico de vigência — seção 2.2 da especificação) vs `tabelado` (preço fixo por item × tabela). O pacote compartilhado de regras de negócio implementa as duas estratégias; o requisito de peso confiável por item vale só para Inove/Tendenze.

@@ -176,14 +176,51 @@ Grades com: contador "(N de M)", busca global, filtro por coluna, faixas de data
 
 ---
 
-## 9. Pendências — 2ª rodada de captura
+## 9. 2ª rodada — formulários e financeiro (07/07/2026)
 
-1. **Wizard Emitir Pedido passos 2+** (clicar numa indústria e seguir): tela de itens, tabela de preço aplicada, condição de pagamento, cálculo do total. *(Somente navegação — sem salvar.)*
-2. **Formulário de edição de Vendedor:** percentuais de comissão (por indústria? por tabela?) e permissões de tabela — hoje só vimos "Clonar Permissões".
-3. **Formulário de edição de Produto:** onde vive o peso em gramas e como o preço por grama é configurado (tabelas "-BRUTO").
-4. **Detalhe de um Pedido** (visualizar): campos completos, itens, parcelas/faturas.
-5. **Abas Contas a Receber e Contas a Pagar** do financeiro: colunas, parcelas, vínculo com pedido.
-6. **Relatórios das categorias Comissão, Financeiro, Pedidos, Vendedores** (nomes e filtros).
+### Editor de Pedido ([print](prints-sistema-atual/pedido-editor-vazio.png))
+⚠️ **Abrir "Emitir Pedido" cria imediatamente um rascunho numerado** (nº sequencial, status vazio) — por isso há pedidos vazios na listagem (1584, 1590, 1598, 1604...). Dor a não replicar.
+
+Estrutura completa do pedido (uma página única):
+- **Cabeçalho:** Cliente (busca por razão/fantasia/código/CNPJ), Comprador (contato do cliente), Dt. Venda*, **Comissão (%)*** (percentual no próprio pedido), Dt. Envio, Dt. Entrega.
+- **Itens:** busca por nome/código/EAN + Busca Avançada + "Modo Cesta de Compra"; colunas: Código, Descrição, Fornecedor/Marca, **Comissão** (por item), **R$ Tabela**, **Preço Final**, Qtde, **Qtde. Faturada**, Total. Campos de % em massa (Aplicar/Limpar).
+- **Totais:** Qtde Itens/Produtos, Peso Bruto/Líquido total, IPI, ST, Frete (com "Calcular % Frete"), Acréscimo, Desconto, Total Final.
+- **Parcelas de Recebimento (embutidas no pedido):** D. Prevista, Valor (+ "Dividir Parcelas" automático), Tipo de Documento (19 formas), Nº Documento, Conta Bancária, V. Recebido, Status ("Não Pago (NP)"...), D. Recebimento, "Recalcular data".
+- **Complementares:** Nº Pedido ERP, Tipo (Pedido/Orçamento...), checkbox Cancelado, Condição de Pagamento (habilita após incluir produto), **Vendedor***, Status, Código de Rastreio, Observações (pública e privada), Fator Cubagem, **Base de Cálculo de Comissão** ("1 - Valor dos Produtos + Acréscimo - Desconto"...), Endereços de Entrega e Cobrança.
+- **SV.Drive:** anexos do pedido (romaneios).
+- **Faturamento & Comissão:** barra "VENDA X FATURADO", Base de Cálculo, Saldo à Faturar (%), "Criar Parcela de Saldo"; grade de faturas: Nº NF-e, Dt. Emissão NF-e, Dt. Venc. Duplicata, Valor Previsto, Valor Duplicata, Dt. Liq. Duplicata, **Dt. Previsão Comissão**, Comissão.
+
+### Cadastro de Vendedor ([print](prints-sistema-atual/vendedor-editar.png)) — **modelo de comissão e permissões**
+- Dados: Nome*, E-mail de acesso*, Status*, **Margem Mínima de Lucro**, assinatura de e-mail (rich text), Código, Gênero.
+- **"Indústrias que este vendedor atenderá"** — a regra de comissão de vendedor é uma **matriz por indústria × tabela de preço**, cada linha com: Indústria, Tabela de Preço (específica ou "Todas"), **Comissão Proporcional (%)** (40% em todas as linhas do Fabio Fadu — proporção da comissão do escritório repassada ao vendedor), **Acréscimo de Tabela (%)**, checkbox **"Pode alterar preço?"**, **Limite de Desconto**. Botões Adicionar/Remover linha. Linhas reais: ANEIS BRASIL/ESPECIAL, ANEIS BRASIL/ESPECIAL-BR, BRILHUS/Todas, INOVE/VENDAS-700, INOVE/VENDAS-900, SPART/VENDAS-Sm, SPART/VENDAS-BR, ZARRARA/ZARRARA, ZARRARA LUXO/Todas, TENDENZE/Todas.
+- **Restrição por região:** "Este vendedor verá clientes somente destas Regiões".
+- Configuração de emissão: "Bloquear emissão de pedido abaixo do pedido mínimo pela forma de pagamento".
+- **Permissões de Acesso** (abas Módulos | Configurações | Relatórios | Relatórios Móvel | Resumo): por módulo (Agenda, Clientes, Contatos, CRM, Financeiro, Indústrias, Orçamentos, **Pedidos**, Produtos, Regiões, SV.Drive, Transportadoras...), flags **Acessar / Incluir / Alterar / Excluir / Restaurar** + restrições finas: "Acessar apenas **pedidos gerados por ele**", "Alterar apenas clientes cadastrados por ele" etc. — é o mecanismo atual do "vendedor só vê o que é dele".
+
+### Cadastro de Produto ([print](prints-sistema-atual/produto-editar-inove.png)) — **como funciona o preço por grama hoje**
+- **PAN1056 (INOVE):** Nome do Produto = **"1.0"**, Preço de Venda = **R$ 46,04**, Tabela de Preço = **"VENDAS - 900"** → **o registro de produto representa 1 grama**: o preço cadastrado é o **valor do grama** daquela tabela/teor. Os valores por tabela (VENDAS-900 46,04 / HERI-900 44,12 / HERI-700 38,04 / VENDAS-700 39,62) são os valores do grama por canal e teor. ❓ Confirmar com o gestor como a quantidade é lançada no pedido (qtde = gramas?).
+- Campos: Indústria*, SKU*, Nome*, Preço de Venda (+ "Calcular Preço de Venda"), Cores, NCM, Preço em Promoção, Marca; **Custo e Precificação** (Preço de Compra/Fabricação + Recalcular Custo Médio, Markup, Margem de Lucro/Mínima/Segurança, Cálculo do Custo Médio); IPI*, Unidade, Embalagem, **Tabela de Preço (select único — 1 registro = 1 tabela)**, Categoria, dimensões/cubagem, Código Original, Espessura, Referência, Modelo, **Peso Líquido (Kg)**, Referência de Agrupamento, URL de vídeo, ICMS %, Status*; **Foto: upload por URL ou arrastar-e-soltar**; anexos SV.Drive.
+
+### Financeiro — Contas a Receber ([print](prints-sistema-atual/financeiro-contas-receber.png))
+- 375 títulos. Colunas: Código, Receber (ação), Dt. Vencimento, Valor, **Grupo de Conta**, **Descrição = parcela "1 de 1" / "2 de 3"**, Valor Recebido, Conta Bancária, Tipo de Documento, Nº Documento, Status (bolinha vermelha = não pago), Dt. Recebimento. Ações: Novo Recebimento, **Gerar Boleto**, Receber, Gerar Recibo.
+- **Achado-chave:** títulos com grupo **"Comissão de Pedido"** — o pedido gera automaticamente o contas-a-receber da comissão do escritório, **parcela a parcela** (config "Gerar lançamento de comissão" ativa). Recebimento parcial visível (valor recebido < valor).
+
+### Relatórios de Comissão ([print](prints-sistema-atual/relatorios-comiss.png))
+- **1038 - Comissão do Escritório - Analítica** ("a receber ou recebida das indústrias, detalhadamente **parcela a parcela**")
+- **1039/1040 - Planilha de Comissão NÃO RECEBIDA / RECEBIDA por Indústria** (mês a mês)
+- **1041/1044 - Planilha de Comissão NÃO RECEBIDA / RECEBIDA por Cliente** (mês a mês)
+- Confirma o modelo do novo sistema: comissão do escritório vinculada ao recebimento das parcelas, com visões por indústria e cliente.
+
+---
+
+## 10. Pendências — 3ª rodada de captura
+
+1. ~~Wizard Emitir Pedido~~ ✅ capturado (editor de pedido — seção 9). Falta: fluxo com produto adicionado (cálculo de condição de pagamento e comissão por item).
+2. ~~Formulário de Vendedor~~ ✅ capturado (matriz indústria × tabela — seção 9).
+3. ~~Formulário de Produto~~ ✅ capturado (produto-grama INOVE — seção 9). ❓ Confirmar com o gestor: no pedido INOVE/TENDENZE, a quantidade lançada é em gramas?
+4. **Detalhe de um Pedido real** (visualizar preenchido): itens, parcelas e faturas com dados.
+5. ~~Contas a Receber/Pagar~~ ✅ capturado (seção 9).
+6. **Relatórios das categorias Financeiro, Pedidos, Vendedores, Clientes, Produtos** (Comissão ✅).
 7. **Exportações CSV/Excel** de clientes, produtos, pedidos e tabelas de preço para migração (item 9 do roteiro da seção 4 da especificação).
 8. **Login com perfil de vendedor** para mapear diferenças de acesso (item 8 do roteiro).
-9. Confirmar com o gestor: quais das 12 indústrias entram no novo sistema e o que são as "lógicas" (BRILHUS, CAMADI, ZARRARA LUXO, PRONTA ENTREGA, Hb Joias, IMPORTADOS) — a especificação cita só 5.
+9. ~~Confirmar com o gestor: quais das 12 indústrias entram no novo sistema~~ **Respondido (07/07/2026):** entram **todas menos "Hb Joias"** (11 indústrias) — ver ADR-004. E a precificação por grama vale **apenas para INOVE e TENDENZE**; as demais (inclusive tabelas "-BRUTO") são preço tabelado fixo — ver ADR-005.
