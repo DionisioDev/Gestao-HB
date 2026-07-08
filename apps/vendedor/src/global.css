@@ -1,0 +1,14 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--hb-fundo);
+  color: var(--hb-texto);
+  font-family: var(--hb-fonte);
+  font-size: var(--hb-corpo);
+  -webkit-font-smoothing: antialiased;
+}

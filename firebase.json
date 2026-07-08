@@ -6,6 +6,11 @@
   "storage": {
     "rules": "storage.rules"
   },
+  "functions": {
+    "source": "functions",
+    "codebase": "default",
+    "runtime": "nodejs22"
+  },
   "emulators": {
     "auth": { "port": 9099 },
     "firestore": { "port": 8080 },

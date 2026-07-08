@@ -1,0 +1,48 @@
+/* Design tokens — seção 6 da especificação (Material Design 3, paleta HB).
+   Fonte única de cores/tipografia/raios: apps importam este arquivo no root. */
+:root {
+  /* Paleta */
+  --hb-primaria: #0f2a43;        /* sidebar/header, títulos, botões primários */
+  --hb-acao: #1a73e8;            /* botões de ação, links, ativos, gráficos */
+  --hb-fundo: #eef3f8;           /* background geral */
+  --hb-superficie: #ffffff;      /* cards, tabelas, modais, inputs */
+  --hb-acento: #f7f3ea;          /* destaques sutis, cards de resumo */
+
+  /* Funcionais (status — mesma cor em TODO o sistema, seção 6) */
+  --hb-sucesso: #1e8e3e;         /* pago/sucesso */
+  --hb-atencao: #f9ab00;         /* pendente/atenção */
+  --hb-erro: #d93025;            /* cancelado/erro */
+
+  /* Derivadas */
+  --hb-primaria-hover: #16385a;
+  --hb-acao-hover: #1765cc;
+  --hb-texto: #1f2937;
+  --hb-texto-suave: #5f6b7a;
+  --hb-borda: #dbe4ee;
+  --hb-sucesso-bg: #e6f4ea;
+  --hb-atencao-bg: #fef7e0;
+  --hb-erro-bg: #fce8e6;
+  --hb-info-bg: #e8f0fe;
+
+  /* Tipografia (Inter; escala da seção 6) */
+  --hb-fonte: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+  --hb-titulo-1: 24px;
+  --hb-titulo-2: 20px;
+  --hb-corpo: 15px;
+  --hb-corpo-sm: 14px;
+  --hb-legenda: 12px;
+
+  /* Raios e sombras Material 3 */
+  --hb-raio-card: 12px;
+  --hb-raio-botao: 999px;        /* botões pill (Anexo A.5) */
+  --hb-raio-input: 8px;
+  --hb-sombra-1: 0 1px 2px rgba(15, 42, 67, 0.08), 0 1px 3px rgba(15, 42, 67, 0.06);
+  --hb-sombra-2: 0 2px 6px rgba(15, 42, 67, 0.12), 0 1px 2px rgba(15, 42, 67, 0.08);
+
+  /* Movimento (seção 8: 150–300ms, sutil) */
+  --hb-transicao-rapida: 150ms cubic-bezier(0.2, 0, 0, 1);
+  --hb-transicao: 250ms cubic-bezier(0.2, 0, 0, 1);
+
+  /* Toque (acessibilidade: ≥ 44px) */
+  --hb-toque-min: 44px;
+}
