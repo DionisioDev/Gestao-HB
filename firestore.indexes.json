@@ -9,6 +9,14 @@
       ]
     },
     {
+      "collectionGroup": "produtos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "industriaId", "order": "ASCENDING" },
+        { "fieldPath": "sku", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "valoresGrama",
       "queryScope": "COLLECTION",
       "fields": [

@@ -80,7 +80,8 @@ service cloud.firestore {
     // ---------- catálogo e preços ----------
     match /produtos/{produtoId} {
       allow read: if sessaoOk();
-      allow write: if false;
+      allow create, update: if ehAdmin(); // INTERINO: callable quando houver Functions
+      allow delete: if false; // inativar, nunca excluir
 
       // Preço por tabela: vendedor só lê tabela liberada na sua matriz
       // (campo denormalizado vendedores/{id}.tabelasLiberadas: ["industriaId/tabelaId", "industriaId/*"])
@@ -90,7 +91,8 @@ service cloud.firestore {
                 resource.data.industriaId + '/' + tabelaId,
                 resource.data.industriaId + '/*'
               ]));
-        allow write: if false;
+        allow create, update: if ehAdmin(); // INTERINO
+        allow delete: if ehAdmin(); // remover preço de tabela é operação legítima do catálogo
       }
     }
 

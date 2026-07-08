@@ -71,7 +71,7 @@ const IconeMenu: Icone = (p) => (
 const MENU: Array<{ rotulo: string; rota: string; Icone: Icone; pronto: boolean }> = [
   { rotulo: 'Painel', rota: '/', Icone: IconePainel, pronto: true },
   { rotulo: 'Indústrias', rota: '/industrias', Icone: IconeIndustria, pronto: true },
-  { rotulo: 'Produtos', rota: '/produtos', Icone: IconeProduto, pronto: false },
+  { rotulo: 'Produtos', rota: '/produtos', Icone: IconeProduto, pronto: true },
   { rotulo: 'Clientes', rota: '/clientes', Icone: IconeCliente, pronto: false },
   { rotulo: 'Vendedores', rota: '/vendedores', Icone: IconeVendedor, pronto: false },
   { rotulo: 'Usuários', rota: '/usuarios', Icone: IconeUsuario, pronto: false },

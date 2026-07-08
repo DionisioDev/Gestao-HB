@@ -48,6 +48,30 @@ export const TabelaPrecoSchema = z.object({
 });
 export type TabelaPreco = z.infer<typeof TabelaPrecoSchema>;
 
+export const ProdutoSchema = z.object({
+  industriaId: z.string().min(1, 'Escolha a indústria'),
+  sku: z.string().trim().min(1, 'Informe o código (SKU)').max(40),
+  nome: z.string().trim().min(1, 'Informe o nome').max(120),
+  descricao: z.string().trim().max(500).optional(),
+  /** peso em miligramas — obrigatório quando a indústria precifica por grama */
+  pesoMg: z.number().int().positive('Peso deve ser positivo').optional(),
+  teor: z.number().int().optional(),
+  categoria: z.string().trim().max(60).optional(),
+  codigoOriginal: z.string().trim().max(40).optional(),
+  referencia: z.string().trim().max(40).optional(),
+  referenciaAgrupamento: z.string().trim().max(40).optional(),
+  ean: z.string().trim().max(14).optional(),
+  ativo: z.boolean().default(true),
+});
+export type Produto = z.infer<typeof ProdutoSchema>;
+
+export const PrecoProdutoSchema = z.object({
+  industriaId: z.string().min(1),
+  tabelaId: z.string().min(1),
+  precoCentavos: z.number().int().positive('Preço deve ser positivo'),
+});
+export type PrecoProduto = z.infer<typeof PrecoProdutoSchema>;
+
 export const ValorGramaSchema = z.object({
   industriaId: z.string().min(1),
   tabelaId: z.string().min(1),
