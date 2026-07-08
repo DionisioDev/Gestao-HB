@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  comissaoElegivelPorParcelas,
   comissaoEscritorio,
   comissaoVendedor,
   elegibilidadeParaFechamento,
@@ -104,6 +105,46 @@ describe('elegibilidadeParaFechamento', () => {
       julho,
     );
     expect(r).toMatchObject({ elegivel: false, motivo: 'cancelado' });
+  });
+
+  it('E6: porParcela — 1 de 3 parcelas iguais paga no período → 1/3 da comissão elegível', () => {
+    const r = comissaoElegivelPorParcelas(
+      30000,
+      300000,
+      [
+        { valorCentavos: 100000, dataPagto: new Date(Date.UTC(2026, 6, 15)) },
+        { valorCentavos: 100000 },
+        { valorCentavos: 100000 },
+      ],
+      julho,
+    );
+    expect(r.valorPagoCentavos).toBe(100000);
+    expect(r.valorElegivelCentavos).toBe(10000); // R$ 100,00; vendedor 40% → 4000 c
+    expect(comissaoVendedor(r.valorElegivelCentavos, 40)).toBe(4000);
+  });
+
+  it('E7: porParcela — parcelas de valores diferentes somam proporcionalmente', () => {
+    const r = comissaoElegivelPorParcelas(
+      30000,
+      300000,
+      [
+        { valorCentavos: 100000, dataPagto: new Date(Date.UTC(2026, 6, 10)) },
+        { valorCentavos: 50000, dataPagto: new Date(Date.UTC(2026, 6, 25)) },
+        { valorCentavos: 150000 },
+      ],
+      julho,
+    );
+    expect(r.valorElegivelCentavos).toBe(15000); // R$ 150,00
+  });
+
+  it('porParcela — parcela paga após o fim do período não conta', () => {
+    const r = comissaoElegivelPorParcelas(
+      30000,
+      300000,
+      [{ valorCentavos: 100000, dataPagto: new Date(Date.UTC(2026, 7, 1)) }],
+      julho,
+    );
+    expect(r.valorElegivelCentavos).toBe(0);
   });
 
   it('Regime B quitado após o fim do período → fora do período', () => {

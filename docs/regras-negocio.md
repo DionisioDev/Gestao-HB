@@ -39,7 +39,7 @@ totalPedido  = Σ subtotalItens + freteCentavos + acrescimoCentavos − desconto
 ```
 Acréscimo/desconto percentuais são convertidos a centavos sobre Σ subtotalItens antes da soma (round half-up).
 
-> `[CONFIRMAR]` No legado, itens por grama podem ter quantidade fracionada (venda em gramas). Até confirmação, `qtde` de item por grama aceita 3 casas decimais e `subtotalItem = round(precoUnit × qtde)`.
+> **Confirmado (07/07/2026):** itens por grama têm quantidade **em gramas, fracionada** (até 3 casas decimais); `subtotalItem = round(precoUnit × qtde)`. Itens tabelados usam quantidade inteira (unidades).
 
 ## 2. Comissões (ADR-001, análise §9)
 
@@ -68,8 +68,13 @@ comissaoVendedor = round(comissaoEscritorio × pctProporcional / 100)
 
 ### 2.3 Elegibilidade por regime (ADR-001)
 - **Regime A (mensalFixo — Spart, Anéis Brasil):** comissão de pedido **emitido no mês M** fica `elegivel` no fechamento de M, com `previsaoRecebimento` = dia `diaPagtoComissao` (15) de M+1. Independe do pagamento do cliente.
-- **Regime B (posRecebimento — Inove, Tendenze, Zarrara, demais):** comissão nasce `aguardandoPagtoCliente`; quando a **última parcela** do pedido é baixada (pedido quitado), muda a `elegivel` com `dataElegibilidade` = data da baixa; entra no próximo fechamento aberto após essa data.
-  - `[CONFIRMAR com gestor]` Elegibilidade proporcional por parcela paga (como o relatório 1038 do legado sugere) ou só com pedido quitado? **v1 assume pedido quitado.**
+- **Regime B (posRecebimento — Inove, Tendenze, Zarrara, demais):** comissão nasce `aguardandoPagtoCliente`. **Confirmado (07/07/2026): as duas modalidades existem e são configuráveis por indústria** (`elegibilidadeComissao`):
+  - **`pedidoQuitado`:** elegível quando a **última parcela** é baixada (pedido quitado); `dataElegibilidade` = data da baixa; entra no fechamento subsequente.
+  - **`porParcela`:** a cada parcela baixada, torna-se elegível a **fração proporcional** da comissão:
+    ```
+    comissaoElegivel = round( comissaoTotal × valorParcelasPagasNoPeriodo / totalPedido )
+    ```
+    O fechamento consome as frações elegíveis ainda não fechadas (controle por parcela: `fechamentoId` na fração).
 - Pedido **cancelado** antes do fechamento → comissão `estornada`, fora de qualquer fechamento.
 - Pedido cancelado/devolvido **após** comissão paga (Regime A): gera lançamento negativo no fechamento seguinte — decisão 1b ainda aberta; implementação só após fechada.
 
@@ -81,6 +86,8 @@ comissaoVendedor = round(comissaoEscritorio × pctProporcional / 100)
 | E3 | B | 10/07/26 | parcial (1 de 3) | **Não** (aguardandoPagtoCliente) |
 | E4 | A | 28/06/26 | — | Não (pertence ao fechamento de junho) |
 | E5 | B | 05/06/26 | quitado 02/07/26 | **Sim** (elegível só em julho) |
+| E6 | B `porParcela` | 10/07/26 | 1 de 3 parcelas iguais paga em 15/07/26 (pedido R$ 3.000,00; comissão total R$ 300,00) | **Sim, parcialmente:** elegível round(30000 × 100000/300000) = 10000 c = **R$ 100,00**; vendedor 40% → R$ 40,00 |
+| E7 | B `porParcela` | 10/07/26 | 2 parcelas pagas (R$ 1.000,00 + R$ 500,00 de um pedido de R$ 3.000,00; comissão R$ 300,00) | Elegível round(30000 × 150000/300000) = **R$ 150,00** |
 
 ### 2.4 Previsão do vendedor (dashboard)
 - **Confirmado:** Σ comissões `elegivel`/`fechada` do próximo fechamento (Regime A do mês anterior + Regime B já elegíveis).

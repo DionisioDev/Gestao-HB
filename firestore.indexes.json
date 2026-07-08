@@ -1,0 +1,22 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "pedidos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vendedorId", "order": "ASCENDING" },
+        { "fieldPath": "dataEmissao", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "comissoes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vendedorId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "dataElegibilidade", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

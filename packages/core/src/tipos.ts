@@ -6,6 +6,9 @@
 export type RegimeComissao = 'mensalFixo' | 'posRecebimento';
 export type ModeloPreco = 'porGrama' | 'tabelado';
 
+/** Regime B: quando a comissão se torna elegível — configurável por indústria (regras-negocio §2.3). */
+export type ElegibilidadeComissao = 'pedidoQuitado' | 'porParcela';
+
 export type StatusComissao =
   | 'aguardandoPagtoCliente'
   | 'elegivel'

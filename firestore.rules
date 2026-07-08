@@ -1,0 +1,148 @@
+rules_version = '2';
+
+// Security Rules — 2ª camada da autorização (docs/arquitetura.md §4).
+// Princípios: default deny; sessão máxima de 24h (auth_time); usuário precisa estar ativo;
+// escritas de negócio SOMENTE via Cloud Functions (Admin SDK ignora estas regras);
+// vendedor só lê os próprios pedidos/comissões e os preços das tabelas liberadas.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    // Sessão de 24h: auth_time (segundos) não pode ser mais velho que 24h (seção 7 da especificação)
+    function sessaoValida() {
+      return request.time.toMillis() - (request.auth.token.auth_time * 1000) < 24 * 60 * 60 * 1000;
+    }
+
+    function usuarioAtivo() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.ativo == true;
+    }
+
+    function sessaoOk() {
+      return autenticado() && sessaoValida() && usuarioAtivo();
+    }
+
+    function ehAdmin() {
+      return sessaoOk() && request.auth.token.perfil == 'admin';
+    }
+
+    function ehVendedor() {
+      return sessaoOk() && request.auth.token.perfil == 'vendedor';
+    }
+
+    function meuVendedorId() {
+      return request.auth.token.vendedorId;
+    }
+
+    function docVendedor() {
+      return get(/databases/$(database)/documents/vendedores/$(meuVendedorId())).data;
+    }
+
+    // ---------- usuários ----------
+    match /usuarios/{uid} {
+      allow read: if ehAdmin() || (sessaoOk() && request.auth.uid == uid);
+      allow write: if false; // somente functions
+    }
+
+    // ---------- cadastros base (leitura autenticada; escrita só via functions) ----------
+    match /industrias/{industriaId} {
+      allow read: if sessaoOk();
+      allow write: if false;
+
+      match /tabelasPreco/{tabelaId} {
+        allow read: if sessaoOk();
+        allow write: if false;
+      }
+    }
+
+    match /clientes/{clienteId} {
+      allow read: if sessaoOk();
+      allow write: if false;
+
+      match /contatos/{contatoId} {
+        allow read: if sessaoOk();
+        allow write: if false;
+      }
+    }
+
+    match /vendedores/{vendedorId} {
+      allow read: if ehAdmin() || (ehVendedor() && meuVendedorId() == vendedorId);
+      allow write: if false;
+    }
+
+    // ---------- catálogo e preços ----------
+    match /produtos/{produtoId} {
+      allow read: if sessaoOk();
+      allow write: if false;
+
+      // Preço por tabela: vendedor só lê tabela liberada na sua matriz
+      // (campo denormalizado vendedores/{id}.tabelasLiberadas: ["industriaId/tabelaId", "industriaId/*"])
+      match /precos/{tabelaId} {
+        allow read: if ehAdmin()
+          || (ehVendedor() && docVendedor().tabelasLiberadas.hasAny([
+                resource.data.industriaId + '/' + tabelaId,
+                resource.data.industriaId + '/*'
+              ]));
+        allow write: if false;
+      }
+    }
+
+    // Histórico do valor do grama: leitura autenticada, escrita nunca (append via functions)
+    match /valoresGrama/{id} {
+      allow read: if sessaoOk();
+      allow write: if false;
+    }
+
+    // ---------- pedidos ----------
+    match /pedidos/{pedidoId} {
+      allow read: if ehAdmin() || (ehVendedor() && resource.data.vendedorId == meuVendedorId());
+      allow write: if false; // emissão/edição somente via functions
+
+      match /parcelas/{parcelaId} {
+        allow read: if ehAdmin()
+          || (ehVendedor()
+              && get(/databases/$(database)/documents/pedidos/$(pedidoId)).data.vendedorId == meuVendedorId());
+        allow write: if false;
+      }
+    }
+
+    // ---------- comissões ----------
+    match /comissoes/{id} {
+      allow read: if ehAdmin() || (ehVendedor() && resource.data.vendedorId == meuVendedorId());
+      allow write: if false;
+    }
+
+    match /fechamentosComissao/{id} {
+      allow read: if ehAdmin() || (ehVendedor() && resource.data.vendedorId == meuVendedorId());
+      allow write: if false;
+    }
+
+    // ---------- romaneios ----------
+    match /romaneios/{id} {
+      allow read: if ehAdmin()
+        || (ehVendedor()
+            && get(/databases/$(database)/documents/pedidos/$(resource.data.pedidoId)).data.vendedorId == meuVendedorId());
+      allow write: if false;
+    }
+
+    // ---------- auditoria: append-only via servidor; nenhum cliente escreve, só admin lê ----------
+    match /auditoria/{id} {
+      allow read: if ehAdmin();
+      allow write: if false;
+    }
+
+    // ---------- config interna ----------
+    match /config/{id} {
+      allow read: if ehAdmin();
+      allow write: if false;
+    }
+
+    // default deny para qualquer caminho não coberto
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

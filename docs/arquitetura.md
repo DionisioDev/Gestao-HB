@@ -68,6 +68,7 @@ industrias/{id}
   logica: bool                      # indústria "agrupador" sem dados fiscais
   regimeComissao: 'mensalFixo' | 'posRecebimento'
   diaPagtoComissao?: number         # ex.: 15 (regime A)
+  elegibilidadeComissao?: 'pedidoQuitado' | 'porParcela'  # regime B — configurável por indústria
   modeloPreco: 'porGrama' | 'tabelado'   # ADR-005: porGrama só Inove/Tendenze
   prazoEntregaDias?, condicoesComerciais?, ativo
 
@@ -82,6 +83,7 @@ produtos/{id}
   codigoOriginal?, referencia?, referenciaAgrupamento?, ean?
   fotos: [{storagePath, origem}], ativo
 produtos/{id}/precos/{tabelaId}     # SUBCOLEÇÃO por tabela — ver §4 (Rules filtram por tabela liberada)
+  industriaId                       # duplicado aqui para as Rules checarem sem ler o produto pai
   precoCentavos, calculadoPorGrama: bool, atualizadoEm
 
 clientes/{id}
@@ -101,6 +103,9 @@ vendedores/{id}
   regras: [{ industriaId, tabelaId: string|'*', comissaoProporcionalPct,
              acrescimoTabelaPct, podeAlterarPreco, limiteDescontoPct }]
   # matriz vendedor × indústria × tabela = comissão E permissão de tabela (análise §9)
+  tabelasLiberadas: ["industriaId/tabelaId", "industriaId/*"]
+  # ^ denormalizado das regras pelas functions a cada alteração — as Security Rules
+  #   fazem hasAny() sobre esta lista (arrays de maps não são consultáveis em Rules)
 
 pedidos/{id}
   numero (sequencial via transação), tipo: 'orcamento'|'pedido'

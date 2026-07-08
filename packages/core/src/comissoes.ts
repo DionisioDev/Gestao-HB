@@ -90,3 +90,31 @@ export function elegibilidadeParaFechamento(
   }
   return { elegivel: true, motivo: 'quitado' };
 }
+
+export interface ParcelaPaga {
+  valorCentavos: number;
+  /** ausente = parcela ainda em aberto */
+  dataPagto?: Date;
+}
+
+/**
+ * Regime B com elegibilidade 'porParcela' (regras-negocio §2.3, exemplos E6/E7):
+ * fração da comissão elegível = round(comissaoTotal × valorPago / totalPedido),
+ * considerando as parcelas pagas até o fim do período.
+ */
+export function comissaoElegivelPorParcelas(
+  comissaoTotalCentavos: number,
+  totalPedidoCentavos: number,
+  parcelas: readonly ParcelaPaga[],
+  periodo: PeriodoFechamento,
+): { valorElegivelCentavos: number; valorPagoCentavos: number } {
+  if (totalPedidoCentavos <= 0) throw new Error('Total do pedido inválido');
+  const limite = fimDoMes(periodo).getTime();
+  const valorPagoCentavos = parcelas
+    .filter((p) => p.dataPagto && p.dataPagto.getTime() <= limite)
+    .reduce((soma, p) => soma + p.valorCentavos, 0);
+  return {
+    valorElegivelCentavos: percentualDe(comissaoTotalCentavos, (valorPagoCentavos / totalPedidoCentavos) * 100),
+    valorPagoCentavos,
+  };
+}

@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// Storage — fotos de produtos e de perfil (docs/arquitetura.md §4, Anexo A da especificação).
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    function sessaoValida() {
+      return request.time.toMillis() - (request.auth.token.auth_time * 1000) < 24 * 60 * 60 * 1000;
+    }
+
+    function sessaoOk() {
+      return autenticado() && sessaoValida();
+    }
+
+    // Fotos de produtos: leitura autenticada; upload só via functions/admin
+    match /produtos/{industriaId}/{arquivo=**} {
+      allow read: if sessaoOk();
+      allow write: if false;
+    }
+
+    // Foto de perfil: o próprio usuário (ou admin via functions) — imagem, máx. 5 MB (Anexo A.4)
+    match /usuarios/{uid}/{arquivo=**} {
+      allow read: if sessaoOk();
+      allow write: if sessaoOk()
+        && request.auth.uid == uid
+        && request.resource.contentType.matches('image/.*')
+        && request.resource.size < 5 * 1024 * 1024;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
