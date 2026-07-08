@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { AuthProvider } from '../lib/auth';
+import { SnackbarProvider } from '../lib/snackbar';
 import '@gestao-hb/ui/tokens.css';
 import './globals.css';
 
@@ -16,7 +17,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR" className={inter.variable}>
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <SnackbarProvider>{children}</SnackbarProvider>
+        </AuthProvider>
       </body>
     </html>
   );

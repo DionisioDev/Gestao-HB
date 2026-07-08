@@ -47,14 +47,18 @@ service cloud.firestore {
       allow write: if false; // somente functions
     }
 
-    // ---------- cadastros base (leitura autenticada; escrita só via functions) ----------
+    // ---------- cadastros base ----------
+    // INTERINO (sem Blaze/Functions): admin escreve direto, com validação no app.
+    // Ao ativar as Functions, voltar para write:false e mover escrita p/ callables.
     match /industrias/{industriaId} {
       allow read: if sessaoOk();
-      allow write: if false;
+      allow create, update: if ehAdmin();
+      allow delete: if false; // inativar, nunca excluir (brief Fase 1 §3)
 
       match /tabelasPreco/{tabelaId} {
         allow read: if sessaoOk();
-        allow write: if false;
+        allow create, update: if ehAdmin();
+        allow delete: if false;
       }
     }
 
@@ -90,10 +94,11 @@ service cloud.firestore {
       }
     }
 
-    // Histórico do valor do grama: leitura autenticada, escrita nunca (append via functions)
+    // Histórico do valor do grama: append-only (nunca editar/excluir — ADR-006)
     match /valoresGrama/{id} {
       allow read: if sessaoOk();
-      allow write: if false;
+      allow create: if ehAdmin(); // INTERINO: via callable quando houver Functions
+      allow update, delete: if false;
     }
 
     // ---------- pedidos ----------
@@ -128,10 +133,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // ---------- auditoria: append-only via servidor; nenhum cliente escreve, só admin lê ----------
+    // ---------- auditoria: append-only; só admin lê ----------
+    // INTERINO (sem Functions): admin cria registros do próprio uid; update/delete NUNCA.
+    // Com Functions ativas, criação volta a ser exclusiva do servidor (especificação §2.8).
     match /auditoria/{id} {
       allow read: if ehAdmin();
-      allow write: if false;
+      allow create: if ehAdmin() && request.resource.data.usuarioId == request.auth.uid;
+      allow update, delete: if false;
     }
 
     // ---------- config interna ----------

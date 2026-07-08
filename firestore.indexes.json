@@ -9,6 +9,14 @@
       ]
     },
     {
+      "collectionGroup": "valoresGrama",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "industriaId", "order": "ASCENDING" },
+        { "fieldPath": "vigenciaInicio", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "comissoes",
       "queryScope": "COLLECTION",
       "fields": [
