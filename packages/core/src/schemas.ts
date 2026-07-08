@@ -48,6 +48,43 @@ export const TabelaPrecoSchema = z.object({
 });
 export type TabelaPreco = z.infer<typeof TabelaPrecoSchema>;
 
+export const RegraVendedorSchema = z.object({
+  industriaId: z.string().min(1, 'Escolha a indústria'),
+  /** id da tabela ou '*' para todas as tabelas da indústria */
+  tabelaId: z.string().min(1),
+  comissaoProporcionalPct: z.number().min(0, 'Comissão inválida').max(100, 'Máx. 100%'),
+  acrescimoTabelaPct: z.number().min(0).max(100).default(0),
+  podeAlterarPreco: z.boolean().default(false),
+  limiteDescontoPct: z.number().min(0).max(100).default(0),
+});
+
+export const VendedorSchema = z.object({
+  nome: z.string().trim().min(1, 'Informe o nome').max(80),
+  email: z.string().trim().email('E-mail inválido').optional().or(z.literal('')),
+  telefone: z.string().trim().max(20).optional(),
+  regioes: z.array(z.string().trim().min(1)).default([]),
+  /** matriz indústria × tabela: comissão proporcional E permissão de tabela (análise §9) */
+  regras: z.array(RegraVendedorSchema).default([]),
+  ativo: z.boolean().default(true),
+});
+export type Vendedor = z.infer<typeof VendedorSchema>;
+export type RegraVendedorEntrada = z.infer<typeof RegraVendedorSchema>;
+
+/** Denormaliza a matriz para a lista usada pelas Security Rules (arquitetura §3). */
+export function calcularTabelasLiberadas(regras: RegraVendedorEntrada[]): string[] {
+  return [...new Set(regras.map((r) => `${r.industriaId}/${r.tabelaId}`))];
+}
+
+export const UsuarioSchema = z.object({
+  nome: z.string().trim().min(1, 'Informe o nome').max(80),
+  email: z.string().trim().email('E-mail inválido'),
+  telefone: z.string().trim().max(20).optional(),
+  perfil: z.enum(['admin', 'vendedor']),
+  vendedorId: z.string().optional(),
+  ativo: z.boolean().default(true),
+});
+export type Usuario = z.infer<typeof UsuarioSchema>;
+
 export const ProdutoSchema = z.object({
   industriaId: z.string().min(1, 'Escolha a indústria'),
   sku: z.string().trim().min(1, 'Informe o código (SKU)').max(40),

@@ -7,6 +7,7 @@ import {
   signOut,
   type User,
 } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { fb } from './firebase';
 
@@ -46,13 +47,14 @@ export function mensagemErroAuth(codigo: string): string {
 }
 
 async function garantirPerfil(usuario: User): Promise<Perfil> {
-  let token = await usuario.getIdTokenResult();
-  if (!token.claims['perfil']) {
-    // Primeiro acesso do sistema: tenta o bootstrap one-shot do 1º admin.
-    await fb().chamar<Record<string, never>, { ok: boolean }>('bootstrapAdmin')({});
-    token = await usuario.getIdTokenResult(true);
+  // INTERINO (sem Functions/claims): perfil e status vêm do doc usuarios/{uid},
+  // o mesmo que as Security Rules consultam.
+  const foto = await getDoc(doc(fb().db, 'usuarios', usuario.uid));
+  const dados = foto.exists() ? foto.data() : null;
+  if (!dados || dados['ativo'] !== true) {
+    throw Object.assign(new Error('Conta sem acesso.'), { code: 'app/sem-perfil' });
   }
-  const perfil = token.claims['perfil'];
+  const perfil = dados['perfil'];
   if (perfil !== 'admin' && perfil !== 'vendedor') {
     throw Object.assign(new Error('Conta sem perfil.'), { code: 'app/sem-perfil' });
   }

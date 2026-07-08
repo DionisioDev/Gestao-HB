@@ -73,8 +73,8 @@ const MENU: Array<{ rotulo: string; rota: string; Icone: Icone; pronto: boolean 
   { rotulo: 'Indústrias', rota: '/industrias', Icone: IconeIndustria, pronto: true },
   { rotulo: 'Produtos', rota: '/produtos', Icone: IconeProduto, pronto: true },
   { rotulo: 'Clientes', rota: '/clientes', Icone: IconeCliente, pronto: false },
-  { rotulo: 'Vendedores', rota: '/vendedores', Icone: IconeVendedor, pronto: false },
-  { rotulo: 'Usuários', rota: '/usuarios', Icone: IconeUsuario, pronto: false },
+  { rotulo: 'Vendedores', rota: '/vendedores', Icone: IconeVendedor, pronto: true },
+  { rotulo: 'Usuários', rota: '/usuarios', Icone: IconeUsuario, pronto: true },
   { rotulo: 'Auditoria', rota: '/auditoria', Icone: IconeAuditoria, pronto: false },
 ];
 

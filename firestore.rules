@@ -17,24 +17,27 @@ service cloud.firestore {
       return request.time.toMillis() - (request.auth.token.auth_time * 1000) < 24 * 60 * 60 * 1000;
     }
 
-    function usuarioAtivo() {
-      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.ativo == true;
+    // INTERINO (sem Functions/claims): perfil e status vêm do doc usuarios/{uid}.
+    // O motor de Rules deduplica gets do mesmo doc na mesma avaliação (1 leitura).
+    // Com Functions ativas, voltar a usar custom claims (request.auth.token.perfil).
+    function docUsuario() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
     }
 
     function sessaoOk() {
-      return autenticado() && sessaoValida() && usuarioAtivo();
+      return autenticado() && sessaoValida() && docUsuario().ativo == true;
     }
 
     function ehAdmin() {
-      return sessaoOk() && request.auth.token.perfil == 'admin';
+      return sessaoOk() && docUsuario().perfil == 'admin';
     }
 
     function ehVendedor() {
-      return sessaoOk() && request.auth.token.perfil == 'vendedor';
+      return sessaoOk() && docUsuario().perfil == 'vendedor';
     }
 
     function meuVendedorId() {
-      return request.auth.token.vendedorId;
+      return docUsuario().vendedorId;
     }
 
     function docVendedor() {
@@ -43,8 +46,15 @@ service cloud.firestore {
 
     // ---------- usuários ----------
     match /usuarios/{uid} {
-      allow read: if ehAdmin() || (sessaoOk() && request.auth.uid == uid);
-      allow write: if false; // somente functions
+      // leitura do próprio doc não pode exigir sessaoOk (dependeria de si mesma)
+      allow read: if ehAdmin() || (autenticado() && sessaoValida() && request.auth.uid == uid);
+      // INTERINO: admin gerencia usuários; não altera o próprio perfil/status (trava anti-lockout)
+      allow create: if ehAdmin();
+      allow update: if ehAdmin()
+        && (request.auth.uid != uid
+            || (request.resource.data.perfil == resource.data.perfil
+                && request.resource.data.ativo == resource.data.ativo));
+      allow delete: if false;
     }
 
     // ---------- cadastros base ----------
@@ -74,7 +84,8 @@ service cloud.firestore {
 
     match /vendedores/{vendedorId} {
       allow read: if ehAdmin() || (ehVendedor() && meuVendedorId() == vendedorId);
-      allow write: if false;
+      allow create, update: if ehAdmin(); // INTERINO: callable quando houver Functions
+      allow delete: if false; // inativar, nunca excluir
     }
 
     // ---------- catálogo e preços ----------
