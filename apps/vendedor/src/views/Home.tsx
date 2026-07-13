@@ -105,7 +105,7 @@ export function Home() {
         ) : (
           <ul className="home-lista">
             {pedidos.map((p) => (
-              <li key={p.id} className="home-pedido">
+              <li key={p.id} className="home-pedido" onClick={() => navegar(`/pedido/${p.id}`)} style={{ cursor: 'pointer' }}>
                 <div className="home-pedido-linha">
                   <strong>
                     Nº {p.numero}

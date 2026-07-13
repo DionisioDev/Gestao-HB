@@ -5,6 +5,7 @@ import { SnackbarProvider } from './lib/snackbar';
 import { Home } from './views/Home';
 import { Login } from './views/Login';
 import { NovoPedido } from './views/NovoPedido';
+import { Pedido } from './views/Pedido';
 
 function AreaProtegida({ children }: { children: ReactNode }) {
   const { status } = useAuth();
@@ -50,6 +51,14 @@ export function App() {
               element={
                 <AreaProtegida>
                   <NovoPedido />
+                </AreaProtegida>
+              }
+            />
+            <Route
+              path="/pedido/:id"
+              element={
+                <AreaProtegida>
+                  <Pedido />
                 </AreaProtegida>
               }
             />
