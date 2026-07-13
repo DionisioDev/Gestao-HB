@@ -36,3 +36,7 @@ jobs:
 
       - name: Testes das Security Rules (emulador)
         run: npx firebase-tools emulators:exec --only firestore --project demo-gestao-hb "pnpm --filter @gestao-hb/rules-tests test"
+
+      # valida o build do admin p/ Cloudflare Workers (OpenNext não roda no Windows local)
+      - name: Build do admin p/ Cloudflare (OpenNext)
+        run: pnpm --filter @gestao-hb/admin exec opennextjs-cloudflare build

@@ -13,6 +13,8 @@ dist/
 build/
 .next/
 .turbo/
+.open-next/
+.wrangler/
 dev-dist/
 *.tsbuildinfo
 

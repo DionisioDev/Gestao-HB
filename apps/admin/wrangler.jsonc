@@ -1,0 +1,13 @@
+// Deploy do web admin (Next.js via OpenNext) no Cloudflare Workers.
+// Build command:  pnpm --filter @gestao-hb/admin exec opennextjs-cloudflare build
+// Deploy command: npx wrangler deploy -c apps/admin/wrangler.jsonc
+{
+  "name": "gestao-hb-admin",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-07-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  }
+}
