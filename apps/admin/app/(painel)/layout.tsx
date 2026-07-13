@@ -87,6 +87,7 @@ const MENU: Array<{ rotulo: string; rota: string; Icone: Icone; pronto: boolean 
   { rotulo: 'Pedidos', rota: '/pedidos', Icone: IconePedido, pronto: true },
   { rotulo: 'Financeiro', rota: '/financeiro', Icone: IconeFinanceiro, pronto: true },
   { rotulo: 'Comissões', rota: '/comissoes', Icone: IconeVendedor, pronto: true },
+  { rotulo: 'Relatórios', rota: '/relatorios', Icone: IconePainel, pronto: true },
   { rotulo: 'Indústrias', rota: '/industrias', Icone: IconeIndustria, pronto: true },
   { rotulo: 'Produtos', rota: '/produtos', Icone: IconeProduto, pronto: true },
   { rotulo: 'Clientes', rota: '/clientes', Icone: IconeCliente, pronto: true },
