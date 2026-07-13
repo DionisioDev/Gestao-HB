@@ -6,6 +6,7 @@
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-gestao-hb \"pnpm --filter @gestao-hb/rules-tests test\"",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck"
   },
