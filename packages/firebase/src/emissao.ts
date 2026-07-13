@@ -136,6 +136,13 @@ export async function emitirPedido(
         vencimento: p.vencimento,
         valorRecebidoCentavos: 0,
         status: 'aberto',
+        // denormalizado p/ contas a receber (collection group) e Rules — brief Fase 3 §2.5
+        pedidoId: refPedido.id,
+        pedidoNumero: proximo,
+        clienteNome: dados.clienteNome,
+        industriaId: dados.industriaId,
+        vendedorId: dados.vendedorId,
+        tipoPedido: dados.tipo,
       });
     }
 

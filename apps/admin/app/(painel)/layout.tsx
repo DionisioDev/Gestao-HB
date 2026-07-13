@@ -75,9 +75,17 @@ const IconePedido: Icone = (p) => (
   </svg>
 );
 
+const IconeFinanceiro: Icone = (p) => (
+  <svg viewBox="0 0 24 24" {...traco} {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v10M15 9.5c0-1.4-1.3-2.5-3-2.5s-3 1-3 2.3c0 3.4 6 1.6 6 5 0 1.3-1.3 2.3-3 2.3s-3-1.1-3-2.5" />
+  </svg>
+);
+
 const MENU: Array<{ rotulo: string; rota: string; Icone: Icone; pronto: boolean }> = [
   { rotulo: 'Painel', rota: '/', Icone: IconePainel, pronto: true },
   { rotulo: 'Pedidos', rota: '/pedidos', Icone: IconePedido, pronto: true },
+  { rotulo: 'Financeiro', rota: '/financeiro', Icone: IconeFinanceiro, pronto: true },
   { rotulo: 'Indústrias', rota: '/industrias', Icone: IconeIndustria, pronto: true },
   { rotulo: 'Produtos', rota: '/produtos', Icone: IconeProduto, pronto: true },
   { rotulo: 'Clientes', rota: '/clientes', Icone: IconeCliente, pronto: true },

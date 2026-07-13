@@ -182,6 +182,11 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Collection group de parcelas (Contas a Receber): admin tudo; vendedor as próprias
+    match /{path=**}/parcelas/{parcelaId} {
+      allow read: if ehAdmin() || (ehVendedor() && resource.data.vendedorId == meuVendedorId());
+    }
+
     // default deny para qualquer caminho não coberto
     match /{document=**} {
       allow read, write: if false;
