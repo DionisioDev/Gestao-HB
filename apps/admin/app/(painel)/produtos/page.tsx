@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import estilos from '../../../components/ui.module.css';
+import { linhaClicavel } from '../../../lib/a11y';
 import { fb } from '../../../lib/firebase';
 import { useIndustrias } from '../../../lib/industrias';
 
@@ -137,7 +138,7 @@ export default function PaginaProdutos() {
             </thead>
             <tbody>
               {linhas.map((p) => (
-                <tr key={p.id} onClick={() => router.push(`/produtos/${p.id}`)}>
+                <tr key={p.id} {...linhaClicavel(() => router.push(`/produtos/${p.id}`))}>
                   <td data-rotulo="SKU">
                     <strong>{p.sku}</strong>
                   </td>

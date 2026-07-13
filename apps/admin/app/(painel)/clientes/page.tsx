@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import estilos from '../../../components/ui.module.css';
+import { linhaClicavel } from '../../../lib/a11y';
 import { ROTULO_STATUS_CLIENTE, TOM_STATUS_CLIENTE } from '../../../lib/clientes';
 import { fb } from '../../../lib/firebase';
 
@@ -126,7 +127,7 @@ export default function PaginaClientes() {
             </thead>
             <tbody>
               {filtrados.map((c) => (
-                <tr key={c.id} onClick={() => router.push(`/clientes/${c.id}`)}>
+                <tr key={c.id} {...linhaClicavel(() => router.push(`/clientes/${c.id}`))}>
                   <td data-rotulo="Cliente">
                     <strong>{c.fantasia || c.razaoSocial}</strong>
                     <div style={{ color: 'var(--hb-texto-suave)', fontSize: 'var(--hb-legenda)' }}>

@@ -77,7 +77,7 @@
   font-size: var(--hb-legenda);
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.62);
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .manchete {
@@ -100,7 +100,7 @@
 }
 
 .manchete p {
-  color: rgba(255, 255, 255, 0.66);
+  color: rgba(255, 255, 255, 0.8);
   line-height: 1.6;
   margin: 0;
 }
@@ -108,7 +108,7 @@
 .rodapeMarca {
   position: relative;
   font-size: var(--hb-legenda);
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.66);
   animation: subir 400ms 140ms var(--hb-transicao) both;
 }
 

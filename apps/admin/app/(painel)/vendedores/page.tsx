@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import estilos from '../../../components/ui.module.css';
+import { linhaClicavel } from '../../../lib/a11y';
 import { fb } from '../../../lib/firebase';
 import { useIndustrias } from '../../../lib/industrias';
 
@@ -76,7 +77,7 @@ export default function PaginaVendedores() {
             </thead>
             <tbody>
               {vendedores.map((v) => (
-                <tr key={v.id} onClick={() => router.push(`/vendedores/${v.id}`)}>
+                <tr key={v.id} {...linhaClicavel(() => router.push(`/vendedores/${v.id}`))}>
                   <td data-rotulo="Vendedor">
                     <strong>{v.nome}</strong>
                     {v.email && (

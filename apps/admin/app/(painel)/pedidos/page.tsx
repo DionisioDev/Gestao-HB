@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import estilos from '../../../components/ui.module.css';
+import { linhaClicavel } from '../../../lib/a11y';
 import { fb } from '../../../lib/firebase';
 import { useIndustrias } from '../../../lib/industrias';
 import { rotuloStatusPedido, tomStatusPedido } from '../../../lib/status-pedido';
@@ -119,7 +120,7 @@ export default function PaginaPedidos() {
             </thead>
             <tbody>
               {filtrados.map((p) => (
-                <tr key={p.id} onClick={() => router.push(`/pedidos/${p.id}`)}>
+                <tr key={p.id} {...linhaClicavel(() => router.push(`/pedidos/${p.id}`))}>
                   <td data-rotulo="Nº">
                     <strong>{p.numero}</strong>
                     {p.tipo === 'orcamento' && (

@@ -1,9 +1,13 @@
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import estilos from './ui.module.css';
 
-/** Modal de confirmação para ações sensíveis (Anexo A.5 — explica a consequência). */
+/**
+ * Modal de confirmação para ações sensíveis (Anexo A.5 — explica a consequência).
+ * Acessível: foco preso dentro do diálogo (Tab cíclico), Escape fecha e o foco
+ * volta ao elemento que abriu (WCAG 2.4.3).
+ */
 export function ModalConfirmacao({
   titulo,
   children,
@@ -21,12 +25,40 @@ export function ModalConfirmacao({
   aoConfirmar: () => void;
   aoCancelar: () => void;
 }) {
+  const dialogo = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
+    const origem = document.activeElement as HTMLElement | null;
+
+    const focaveis = () =>
+      [...(dialogo.current?.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      ) ?? [])].filter((e) => !e.hasAttribute('disabled'));
+
     const aoTeclar = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') aoCancelar();
+      if (e.key === 'Escape') {
+        aoCancelar();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const lista = focaveis();
+      const primeiro = lista[0];
+      const ultimo = lista[lista.length - 1];
+      if (!primeiro || !ultimo) return;
+      if (e.shiftKey && document.activeElement === primeiro) {
+        e.preventDefault();
+        ultimo.focus();
+      } else if (!e.shiftKey && document.activeElement === ultimo) {
+        e.preventDefault();
+        primeiro.focus();
+      }
     };
+
     window.addEventListener('keydown', aoTeclar);
-    return () => window.removeEventListener('keydown', aoTeclar);
+    return () => {
+      window.removeEventListener('keydown', aoTeclar);
+      origem?.focus();
+    };
   }, [aoCancelar]);
 
   return (
@@ -41,6 +73,7 @@ export function ModalConfirmacao({
         style={{ position: 'absolute', inset: 0, background: 'rgba(15,42,67,0.45)', animation: 'uiAparecer 150ms both' }}
       />
       <div
+        ref={dialogo}
         style={{
           position: 'relative',
           background: 'var(--hb-superficie)',

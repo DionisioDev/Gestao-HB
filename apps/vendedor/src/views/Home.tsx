@@ -105,7 +105,21 @@ export function Home() {
         ) : (
           <ul className="home-lista">
             {pedidos.map((p) => (
-              <li key={p.id} className="home-pedido" onClick={() => navegar(`/pedido/${p.id}`)} style={{ cursor: 'pointer' }}>
+              <li
+                key={p.id}
+                className="home-pedido"
+                role="link"
+                tabIndex={0}
+                onClick={() => navegar(`/pedido/${p.id}`)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    navegar(`/pedido/${p.id}`);
+                  }
+                }}
+                style={{ cursor: 'pointer' }}
+                aria-label={`Pedido ${p.numero} de ${p.clienteNome}`}
+              >
                 <div className="home-pedido-linha">
                   <strong>
                     Nº {p.numero}

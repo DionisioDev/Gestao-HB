@@ -1,12 +1,13 @@
 import type { CSSProperties, ReactNode } from 'react';
 import type { TomStatus } from './status.js';
 
+// tons de texto escurecidos p/ contraste AA (≥4.5:1) sobre os fundos suaves
 const cores: Record<TomStatus, { bg: string; fg: string }> = {
-  sucesso: { bg: 'var(--hb-sucesso-bg)', fg: 'var(--hb-sucesso)' },
-  atencao: { bg: 'var(--hb-atencao-bg)', fg: '#8a5a00' },
-  erro: { bg: 'var(--hb-erro-bg)', fg: 'var(--hb-erro)' },
-  info: { bg: 'var(--hb-info-bg)', fg: 'var(--hb-acao)' },
-  neutro: { bg: 'var(--hb-acento)', fg: 'var(--hb-texto-suave)' },
+  sucesso: { bg: 'var(--hb-sucesso-bg)', fg: '#176c30' },
+  atencao: { bg: 'var(--hb-atencao-bg)', fg: '#7a5000' },
+  erro: { bg: 'var(--hb-erro-bg)', fg: '#a50e0e' },
+  info: { bg: 'var(--hb-info-bg)', fg: '#14549c' },
+  neutro: { bg: 'var(--hb-acento)', fg: '#4c5866' },
 };
 
 export interface StatusChipProps {

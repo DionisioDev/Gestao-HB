@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { ModalConfirmacao } from '../../../components/modal';
 import estilos from '../../../components/ui.module.css';
+import { linhaClicavel } from '../../../lib/a11y';
 import { auditar } from '../../../lib/auditoria';
 import { useAuth } from '../../../lib/auth';
 import { fb } from '../../../lib/firebase';
@@ -113,7 +114,7 @@ export default function PaginaUsuarios() {
             </thead>
             <tbody>
               {usuarios.map((u) => (
-                <tr key={u.id} onClick={() => router.push(`/usuarios/${u.id}`)}>
+                <tr key={u.id} {...linhaClicavel(() => router.push(`/usuarios/${u.id}`))}>
                   <td data-rotulo="Usuário">
                     <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <span

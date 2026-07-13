@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import estilos from '../../../components/ui.module.css';
+import { linhaClicavel } from '../../../lib/a11y';
 import { fb } from '../../../lib/firebase';
 
 interface LinhaIndustria {
@@ -85,7 +86,7 @@ export default function PaginaIndustrias() {
             </thead>
             <tbody>
               {filtradas.map((i) => (
-                <tr key={i.id} onClick={() => router.push(`/industrias/${i.id}`)}>
+                <tr key={i.id} {...linhaClicavel(() => router.push(`/industrias/${i.id}`))}>
                   <td data-rotulo="Indústria">
                     <strong>{i.nome}</strong>
                     {i.logica && (
