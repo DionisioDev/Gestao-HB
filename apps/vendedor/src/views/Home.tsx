@@ -18,10 +18,38 @@ interface PedidoResumo {
   totais?: { totalCentavos: number };
 }
 
+interface ComissaoResumo {
+  status: string;
+  elegibilidade?: string;
+  escritorio?: { valorCentavos: number };
+  vendedor: { valorCentavos: number; pctProporcional: number };
+  valorElegivelEscritorioCentavos?: number;
+}
+
 export function Home() {
   const { nome, vendedorId, sair } = useAuth();
   const navegar = useNavigate();
   const [pedidos, setPedidos] = useState<PedidoResumo[] | null>(null);
+  const [comissoes, setComissoes] = useState<ComissaoResumo[]>([]);
+
+  useEffect(() => {
+    if (!vendedorId) return;
+    return onSnapshot(query(collection(fb().db, 'comissoes'), where('vendedorId', '==', vendedorId)), (foto) =>
+      setComissoes(foto.docs.map((d) => d.data() as ComissaoResumo)),
+    );
+  }, [vendedorId]);
+
+  // previsão em duas faixas (especificação §2.5): confirmado × aguardando pagamento do cliente
+  const valorVendedor = (c: ComissaoResumo) =>
+    c.elegibilidade === 'porParcela' && c.valorElegivelEscritorioCentavos != null
+      ? Math.round((c.valorElegivelEscritorioCentavos * c.vendedor.pctProporcional) / 100)
+      : c.vendedor.valorCentavos;
+  const confirmado = comissoes
+    .filter((c) => ['elegivel', 'fechada'].includes(c.status))
+    .reduce((s, c) => s + valorVendedor(c), 0);
+  const aguardando = comissoes
+    .filter((c) => c.status === 'aguardandoPagtoCliente')
+    .reduce((s, c) => s + c.vendedor.valorCentavos, 0);
 
   useEffect(() => {
     if (!vendedorId) return;
@@ -52,6 +80,17 @@ export function Home() {
       </header>
 
       <main className="home-corpo">
+        <div className="home-previsao">
+          <div className="home-faixa home-faixa-confirmado">
+            <span className="home-faixa-rotulo">Comissão confirmada</span>
+            <strong>{formatarCentavos(confirmado)}</strong>
+          </div>
+          <div className="home-faixa home-faixa-aguardando">
+            <span className="home-faixa-rotulo">Aguardando pagto do cliente</span>
+            <strong>{formatarCentavos(aguardando)}</strong>
+          </div>
+        </div>
+
         {!pedidos ? (
           <div aria-busy="true">
             <div className="home-esqueleto" />

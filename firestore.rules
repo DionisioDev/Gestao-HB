@@ -155,7 +155,8 @@ service cloud.firestore {
 
     match /fechamentosComissao/{id} {
       allow read: if ehAdmin() || (ehVendedor() && resource.data.vendedorId == meuVendedorId());
-      allow write: if false;
+      allow create, update: if ehAdmin(); // INTERINO: callable quando houver Functions
+      allow delete: if false;
     }
 
     // ---------- romaneios ----------
