@@ -1,0 +1,12 @@
+// Config na RAIZ do monorepo para o deploy padrão do Cloudflare Workers
+// (`npx wrangler deploy` rodado na raiz encontra este arquivo automaticamente).
+// Publica o PWA do vendedor, que o `pnpm run build` gera em apps/vendedor/dist.
+// O admin (Next.js) tem projeto/deploy próprios via apps/admin/wrangler.jsonc.
+{
+  "name": "gestao-hb-vendedor",
+  "compatibility_date": "2026-07-01",
+  "assets": {
+    "directory": "./apps/vendedor/dist",
+    "not_found_handling": "single_page_application"
+  }
+}
