@@ -3,3 +3,15 @@ packages:
   - "packages/*"
   - "functions"
   - "tests/*"
+
+# node_modules plano (sem symlinks): o build standalone do Next/OpenNext falha com EPERM
+# ao criar symlinks no Windows sem Modo de Desenvolvedor.
+nodeLinker: hoisted
+
+# O pnpm 10 bloqueia postinstall por padrão; sem estes, o build do Worker não roda.
+onlyBuiltDependencies:
+  - esbuild
+  - workerd
+  - sharp
+  - protobufjs
+  - "@firebase/util"
