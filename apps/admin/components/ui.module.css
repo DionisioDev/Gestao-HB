@@ -281,6 +281,23 @@ textarea.entrada {
   margin-top: 4px;
 }
 
+/* Ícone de câmera sobre o avatar: some até o hover/foco (Anexo A.5) */
+button:hover > .sobreposicaoFoto,
+button:focus-visible > .sobreposicaoFoto {
+  opacity: 1 !important;
+}
+
+.chipTabela {
+  display: inline-block;
+  padding: 2px 9px;
+  margin: 2px 4px 2px 0;
+  border-radius: 999px;
+  background: var(--hb-acento);
+  color: var(--hb-primaria);
+  font-size: var(--hb-legenda);
+  white-space: nowrap;
+}
+
 .esqueleto {
   height: 52px;
   border-radius: 10px;

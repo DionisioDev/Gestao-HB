@@ -26,3 +26,8 @@ test-results/
 # SO / editor
 .DS_Store
 Thumbs.db
+
+# Logs dos emuladores
+firestore-debug.log
+firebase-debug.log
+ui-debug.log

@@ -56,6 +56,16 @@ Decisões fechadas migram da tabela da seção 5 de [especificacao.md](especific
 - **Decisão:** PWA mobile-first (instalável pelo navegador), com **suporte offline** via persistência do Firestore — o vendedor monta pedido sem sinal e sincroniza depois (fecha também a decisão nº 7 da seção 5).
 - **Consequências:** uma única base TypeScript no monorepo; rascunho de pedido preservado localmente inclusive com sessão expirada (seção 7 da especificação); sem publicação em lojas.
 
+## ADR-010 — Área de usuários sem Cloud Functions: foto auto-serviço e desativação por Rules
+
+- **Data:** 21/07/2026
+- **Contexto:** o Anexo A pede que o admin suba a foto de qualquer usuário e que a desativação "derrube a sessão em até 1 minuto". As duas coisas exigem Admin SDK (`setCustomUserClaims`, `revokeRefreshTokens`), ou seja, Cloud Functions — e a Cloud Functions API nunca foi habilitada no projeto (`SERVICE_DISABLED`). Storage Rules **não** conseguem consultar o Firestore, então sem custom claims não há como identificar um admin na hora do upload.
+- **Decisão:** implementar a área dentro do que as Security Rules garantem sozinhas:
+  - **Foto de perfil é auto-serviço** — só o dono da conta faz upload (`request.auth.uid == uid` nas Storage Rules). Na edição de terceiros o admin vê a foto, mas não a substitui.
+  - **Desativação vale pelo Firestore** — `sessaoOk()` consulta `usuarios/{uid}.ativo`, então a conta inativa perde leitura e escrita imediatamente. O token do Auth continua renovável e o Storage segue acessível (suas regras não alcançam o Firestore).
+  - O próprio usuário pode gravar **apenas** `fotoUrl`, `ultimaSessao` e `atualizadoEm` no próprio documento (`affectedKeys().hasOnly`), nunca perfil, status ou vínculo.
+- **Consequências:** dois critérios de aceite do Anexo A ficam parcialmente atendidos e devem ser refeitos quando o Blaze/Functions entrarem — junto com a migração das escritas para callables (§7) e da auditoria para o servidor (§2.8), que hoje também rodam no cliente. **A foto depende ainda de provisionar o Firebase Storage**, que não está habilitado no projeto.
+
 ## ADR-009 — Migração: cadastros + pedidos/títulos em aberto
 
 - **Data:** 07/07/2026

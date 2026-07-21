@@ -81,6 +81,8 @@ export const UsuarioSchema = z.object({
   telefone: z.string().trim().max(20).optional(),
   perfil: z.enum(['admin', 'vendedor']),
   vendedorId: z.string().optional(),
+  /** URL pública da foto no Storage; o próprio usuário mantém a sua (Anexo A.2.3) */
+  fotoUrl: z.string().url().optional(),
   ativo: z.boolean().default(true),
 });
 export type Usuario = z.infer<typeof UsuarioSchema>;

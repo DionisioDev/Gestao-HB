@@ -7,7 +7,7 @@ import {
   signOut,
   type User,
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { fb } from './firebase';
 
@@ -101,6 +101,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const entrar = useCallback(async (email: string, senha: string) => {
     const cred = await signInWithEmailAndPassword(fb().auth, email.trim(), senha);
     await garantirPerfil(cred.user);
+    // Carimbo para a coluna "última sessão" (Anexo A.2.1). As Rules deixam o próprio
+    // usuário gravar só este campo; falhar aqui não pode impedir o login.
+    await updateDoc(doc(fb().db, 'usuarios', cred.user.uid), { ultimaSessao: serverTimestamp() }).catch(
+      () => {},
+    );
   }, []);
 
   const recuperarSenha = useCallback(async (email: string) => {

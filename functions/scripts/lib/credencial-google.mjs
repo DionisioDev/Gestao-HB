@@ -2,8 +2,8 @@
 //   1. serviceAccount.json na raiz do repo (ambientes de CI / máquinas sem CLI);
 //   2. credencial do Firebase CLI (`firebase login`), renovada quando expirada.
 // A via 2 evita ter de baixar e guardar chave de service account só para rodar script.
-import { existsSync, readFileSync } from 'node:fs';
-import { homedir } from 'node:os';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { homedir, tmpdir } from 'node:os';
 import path from 'node:path';
 
 const CAMINHO_SERVICE_ACCOUNT = new URL('../../../serviceAccount.json', import.meta.url);
@@ -56,6 +56,58 @@ async function tokenDoFirebaseCli() {
   if (!res.ok) throw new Error(`Refresh do token do Firebase CLI falhou: ${res.status} ${await res.text()}`);
   const { access_token: token } = await res.json();
   return { token, origem: 'firebase CLI (renovado)' };
+}
+
+/**
+ * Credencial para o Admin SDK (`initializeApp({ credential })`), nas mesmas duas vias.
+ * Retorna { credential, projeto, origem, limpar }.
+ *
+ * O cliente do Firestore aceita apenas certificado ou Application Default Credentials —
+ * uma credencial de refresh token é recusada. Por isso, na via do CLI, escrevemos um ADC
+ * efêmero em arquivo temporário e o apagamos no fim: nenhuma credencial nova fica no disco.
+ * SEMPRE chamar `limpar()` num finally.
+ */
+export async function obterCredencialAdmin() {
+  const { applicationDefault, cert } = await import('firebase-admin/app');
+
+  if (existsSync(CAMINHO_SERVICE_ACCOUNT)) {
+    const chave = JSON.parse(readFileSync(CAMINHO_SERVICE_ACCOUNT, 'utf8'));
+    return {
+      credential: cert(chave),
+      projeto: chave.project_id,
+      origem: 'serviceAccount.json',
+      limpar: () => {},
+    };
+  }
+
+  const arquivo = caminhoConfigstore();
+  const tokens = arquivo ? JSON.parse(readFileSync(arquivo, 'utf8')).tokens : null;
+  if (!tokens?.refresh_token) {
+    throw new Error('Sem credencial do Google. Rode `firebase login` ou use serviceAccount.json.');
+  }
+
+  const pasta = mkdtempSync(path.join(tmpdir(), 'gestao-hb-adc-'));
+  const caminhoAdc = path.join(pasta, 'adc.json');
+  writeFileSync(
+    caminhoAdc,
+    JSON.stringify({
+      type: 'authorized_user',
+      client_id: CLIENTE_FIREBASE_CLI.id,
+      client_secret: CLIENTE_FIREBASE_CLI.secret,
+      refresh_token: tokens.refresh_token,
+    }),
+  );
+  process.env['GOOGLE_APPLICATION_CREDENTIALS'] = caminhoAdc;
+
+  return {
+    credential: applicationDefault(),
+    projeto: undefined,
+    origem: 'firebase CLI',
+    limpar: () => {
+      rmSync(pasta, { recursive: true, force: true });
+      delete process.env['GOOGLE_APPLICATION_CREDENTIALS'];
+    },
+  };
 }
 
 /**

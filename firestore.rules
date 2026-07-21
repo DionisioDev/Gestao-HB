@@ -50,10 +50,16 @@ service cloud.firestore {
       allow read: if ehAdmin() || (autenticado() && sessaoValida() && request.auth.uid == uid);
       // INTERINO: admin gerencia usuários; não altera o próprio perfil/status (trava anti-lockout)
       allow create: if ehAdmin();
-      allow update: if ehAdmin()
-        && (request.auth.uid != uid
-            || (request.resource.data.perfil == resource.data.perfil
-                && request.resource.data.ativo == resource.data.ativo));
+      allow update: if (ehAdmin()
+          && (request.auth.uid != uid
+              || (request.resource.data.perfil == resource.data.perfil
+                  && request.resource.data.ativo == resource.data.ativo)))
+        // o próprio usuário mantém apenas a foto e o carimbo de sessão (Anexo A.2.3);
+        // perfil, status e vínculo continuam exclusivos do admin
+        || (sessaoOk()
+            && request.auth.uid == uid
+            && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['fotoUrl', 'ultimaSessao', 'atualizadoEm']));
       allow delete: if false;
     }
 

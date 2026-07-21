@@ -4,7 +4,9 @@ import { UsuarioSchema, type Usuario } from '@gestao-hb/core';
 import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState, type FormEvent } from 'react';
+import { Avatar } from '../../../../components/avatar';
 import { CampoSelect, CampoTexto } from '../../../../components/campos';
+import { FotoPerfil } from '../../../../components/foto-perfil';
 import estilos from '../../../../components/ui.module.css';
 import { auditar, limparIndefinidos } from '../../../../lib/auditoria';
 import { useAuth } from '../../../../lib/auth';
@@ -25,6 +27,7 @@ export default function PaginaUsuario() {
   const [perfil, setPerfil] = useState<'admin' | 'vendedor'>('vendedor');
   const [vendedorId, setVendedorId] = useState('');
   const [vendedores, setVendedores] = useState<Array<{ id: string; nome: string }>>([]);
+  const [fotoUrl, setFotoUrl] = useState<string | undefined>(undefined);
   const [carregado, setCarregado] = useState(novo);
   const [anterior, setAnterior] = useState<Record<string, unknown> | null>(null);
   const [salvando, setSalvando] = useState(false);
@@ -52,6 +55,7 @@ export default function PaginaUsuario() {
       setTelefone((d['telefone'] as string) ?? '');
       setPerfil((d['perfil'] as 'admin' | 'vendedor') ?? 'vendedor');
       setVendedorId((d['vendedorId'] as string) ?? '');
+      setFotoUrl(d['fotoUrl'] as string | undefined);
       setCarregado(true);
     });
   }, [id, novo, router, avisar]);
@@ -129,6 +133,34 @@ export default function PaginaUsuario() {
           </p>
         </div>
       </div>
+
+      {!novo && (
+        <section className={estilos.card}>
+          <h2 className={estilos.cardTitulo}>Foto de perfil</h2>
+          {proprioUsuario ? (
+            <FotoPerfil
+              uid={id}
+              nome={nome}
+              fotoUrl={fotoUrl}
+              aoFalhar={(mensagem) => avisar(mensagem, 'erro')}
+              aoEnviar={async (url) => {
+                await updateDoc(doc(fb().db, 'usuarios', id), { fotoUrl: url });
+                setFotoUrl(url);
+                await auditar('foto_perfil_alterada', 'usuario', id, { fotoUrl: fotoUrl ?? null }, { fotoUrl: url });
+                avisar('Foto atualizada.', 'sucesso');
+              }}
+            />
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <Avatar nome={nome} fotoUrl={fotoUrl} tamanho={72} />
+              <p className={estilos.cardDescricao} style={{ margin: 0 }}>
+                Cada pessoa define a própria foto ao entrar no sistema — o upload é autorizado apenas para
+                o dono da conta.
+              </p>
+            </div>
+          )}
+        </section>
+      )}
 
       <form onSubmit={aoSalvar} noValidate>
         <section className={estilos.card}>

@@ -137,3 +137,40 @@ describe('usuários — travas anti-lockout', () => {
     await assertSucceeds(updateDoc(doc(admin(), 'usuarios/vend-uid'), { ativo: false }));
   });
 });
+
+describe('usuários — o próprio dono mantém só foto e carimbo de sessão', () => {
+  // o bloco anterior desativa vend-uid; sem ativo=true nada aqui passaria por sessaoOk()
+  beforeAll(async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'usuarios/vend-uid'), {
+        perfil: 'vendedor',
+        ativo: true,
+        vendedorId: 'vend1',
+      });
+    });
+  });
+
+  it('grava a própria fotoUrl', async () => {
+    await assertSucceeds(updateDoc(doc(vendedor(), 'usuarios/vend-uid'), { fotoUrl: 'https://x/f.jpg' }));
+  });
+  it('grava a própria ultimaSessao', async () => {
+    await assertSucceeds(updateDoc(doc(vendedor(), 'usuarios/vend-uid'), { ultimaSessao: new Date() }));
+  });
+  it('NÃO se promove a admin', async () => {
+    await assertFails(updateDoc(doc(vendedor(), 'usuarios/vend-uid'), { perfil: 'admin' }));
+  });
+  it('NÃO troca o próprio vínculo de vendedor', async () => {
+    await assertFails(updateDoc(doc(vendedor(), 'usuarios/vend-uid'), { vendedorId: 'vend2' }));
+  });
+  it('NÃO passa perfil junto com um campo permitido', async () => {
+    await assertFails(
+      updateDoc(doc(vendedor(), 'usuarios/vend-uid'), { fotoUrl: 'https://x/f.jpg', perfil: 'admin' }),
+    );
+  });
+  it('NÃO altera a foto de outro usuário', async () => {
+    await assertFails(updateDoc(doc(vendedor(), 'usuarios/admin1'), { fotoUrl: 'https://x/f.jpg' }));
+  });
+  it('conta inativa NÃO grava nem a própria foto', async () => {
+    await assertFails(updateDoc(doc(inativo(), 'usuarios/inativo1'), { fotoUrl: 'https://x/f.jpg' }));
+  });
+});

@@ -1,18 +1,22 @@
 'use client';
 
+import type { RegraVendedorEntrada } from '@gestao-hb/core';
 import { StatusChip } from '@gestao-hb/ui';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { collection, doc, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore';
+import { collection, doc, onSnapshot, orderBy, query, updateDoc, type Timestamp } from 'firebase/firestore';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { Avatar } from '../../../components/avatar';
 import { ModalConfirmacao } from '../../../components/modal';
 import estilos from '../../../components/ui.module.css';
 import { linhaClicavel } from '../../../lib/a11y';
 import { auditar } from '../../../lib/auditoria';
 import { useAuth } from '../../../lib/auth';
 import { fb } from '../../../lib/firebase';
+import { useIndustrias } from '../../../lib/industrias';
 import { useSnackbar } from '../../../lib/snackbar';
+import { formatarUltimaSessao, resumirLiberacoes, useMapaTabelas } from '../../../lib/tabelas-liberadas';
 
 interface LinhaUsuario {
   id: string;
@@ -20,6 +24,8 @@ interface LinhaUsuario {
   email: string;
   perfil: 'admin' | 'vendedor';
   vendedorId?: string;
+  fotoUrl?: string;
+  ultimaSessao?: Timestamp;
   ativo: boolean;
 }
 
@@ -30,8 +36,15 @@ export default function PaginaUsuarios() {
   const avisar = useSnackbar();
   const { usuario: logado } = useAuth();
   const [usuarios, setUsuarios] = useState<LinhaUsuario[] | null>(null);
+  const [regrasPorVendedor, setRegrasPorVendedor] = useState<Record<string, RegraVendedorEntrada[]>>({});
+  const [busca, setBusca] = useState('');
+  const [filtroPerfil, setFiltroPerfil] = useState('');
+  const [filtroStatus, setFiltroStatus] = useState('');
   const [acao, setAcao] = useState<Acao>(null);
   const [ocupado, setOcupado] = useState(false);
+
+  const industrias = useIndustrias();
+  const mapaTabelas = useMapaTabelas();
 
   useEffect(() => {
     return onSnapshot(query(collection(fb().db, 'usuarios'), orderBy('nome')), (foto) =>
@@ -39,10 +52,36 @@ export default function PaginaUsuarios() {
     );
   }, []);
 
+  // matriz indústria × tabela mora no cadastro do vendedor (VendedorSchema.regras)
+  useEffect(() => {
+    return onSnapshot(collection(fb().db, 'vendedores'), (foto) => {
+      const mapa: Record<string, RegraVendedorEntrada[]> = {};
+      foto.docs.forEach((d) => (mapa[d.id] = (d.data()['regras'] as RegraVendedorEntrada[]) ?? []));
+      setRegrasPorVendedor(mapa);
+    });
+  }, []);
+
+  const nomesIndustrias = useMemo(() => {
+    const mapa: Record<string, string> = {};
+    (industrias ?? []).forEach((i) => (mapa[i.id] = i.nome));
+    return mapa;
+  }, [industrias]);
+
   const adminsAtivos = useMemo(
     () => (usuarios ?? []).filter((u) => u.perfil === 'admin' && u.ativo).length,
     [usuarios],
   );
+
+  const filtrados = useMemo(() => {
+    if (!usuarios) return null;
+    const termo = busca.trim().toLowerCase();
+    return usuarios.filter(
+      (u) =>
+        (!termo || u.nome.toLowerCase().includes(termo) || u.email.toLowerCase().includes(termo)) &&
+        (!filtroPerfil || u.perfil === filtroPerfil) &&
+        (!filtroStatus || String(u.ativo) === filtroStatus),
+    );
+  }, [usuarios, busca, filtroPerfil, filtroStatus]);
 
   async function confirmarAcao() {
     if (!acao) return;
@@ -96,11 +135,58 @@ export default function PaginaUsuarios() {
         </Link>
       </div>
 
+      <div style={{ display: 'flex', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
+        <input
+          className={estilos.busca}
+          placeholder="Buscar por nome ou e-mail…"
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          aria-label="Buscar usuário"
+        />
+        <select
+          className={estilos.entrada}
+          style={{ maxWidth: 190 }}
+          value={filtroPerfil}
+          onChange={(e) => setFiltroPerfil(e.target.value)}
+          aria-label="Filtrar por perfil"
+        >
+          <option value="">Todos os perfis</option>
+          <option value="admin">Administrador</option>
+          <option value="vendedor">Vendedor</option>
+        </select>
+        <select
+          className={estilos.entrada}
+          style={{ maxWidth: 170 }}
+          value={filtroStatus}
+          onChange={(e) => setFiltroStatus(e.target.value)}
+          aria-label="Filtrar por status"
+        >
+          <option value="">Todos os status</option>
+          <option value="true">Ativos</option>
+          <option value="false">Inativos</option>
+        </select>
+      </div>
+
       <div className={estilos.tabelaEnvoltorio}>
-        {!usuarios ? (
+        {!filtrados ? (
           <div aria-busy="true">
             <div className={estilos.esqueleto} />
             <div className={estilos.esqueleto} />
+          </div>
+        ) : filtrados.length === 0 ? (
+          <div className={estilos.vazio}>
+            <strong>Nenhum usuário encontrado</strong>
+            <p>Ajuste a busca ou os filtros para ver outras contas.</p>
+            <button
+              className={estilos.botaoSecundario}
+              onClick={() => {
+                setBusca('');
+                setFiltroPerfil('');
+                setFiltroStatus('');
+              }}
+            >
+              Limpar filtros
+            </button>
           </div>
         ) : (
           <table className={estilos.tabela}>
@@ -108,32 +194,18 @@ export default function PaginaUsuarios() {
               <tr>
                 <th>Usuário</th>
                 <th>Perfil</th>
+                <th>Tabelas liberadas</th>
+                <th>Última sessão</th>
                 <th>Status</th>
                 <th style={{ textAlign: 'right' }}>Ações</th>
               </tr>
             </thead>
             <tbody>
-              {usuarios.map((u) => (
+              {filtrados.map((u) => (
                 <tr key={u.id} {...linhaClicavel(() => router.push(`/usuarios/${u.id}`))}>
                   <td data-rotulo="Usuário">
                     <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span
-                        aria-hidden
-                        style={{
-                          width: 34,
-                          height: 34,
-                          borderRadius: '50%',
-                          background: 'var(--hb-acento)',
-                          color: 'var(--hb-primaria)',
-                          display: 'grid',
-                          placeItems: 'center',
-                          fontWeight: 700,
-                          fontSize: 13,
-                          flexShrink: 0,
-                        }}
-                      >
-                        {u.nome.charAt(0).toUpperCase()}
-                      </span>
+                      <Avatar nome={u.nome} fotoUrl={u.fotoUrl} />
                       <span>
                         <strong>{u.nome}</strong>
                         {u.id === logado?.uid && (
@@ -147,6 +219,36 @@ export default function PaginaUsuarios() {
                     <StatusChip tom={u.perfil === 'admin' ? 'info' : 'neutro'}>
                       {u.perfil === 'admin' ? 'Administrador' : 'Vendedor'}
                     </StatusChip>
+                  </td>
+                  <td data-rotulo="Tabelas liberadas">
+                    {u.perfil === 'admin' ? (
+                      <span style={{ color: 'var(--hb-texto-suave)', fontSize: 'var(--hb-legenda)' }}>
+                        Acesso total
+                      </span>
+                    ) : (
+                      (() => {
+                        const resumo = resumirLiberacoes(
+                          u.vendedorId ? regrasPorVendedor[u.vendedorId] : undefined,
+                          nomesIndustrias,
+                          mapaTabelas,
+                        );
+                        if (resumo.length === 0) {
+                          return (
+                            <span style={{ color: 'var(--hb-erro)', fontSize: 'var(--hb-legenda)' }}>
+                              Nenhuma tabela liberada
+                            </span>
+                          );
+                        }
+                        return resumo.map((r) => (
+                          <span key={r.industria} className={estilos.chipTabela}>
+                            {r.industria}: {r.tabelas}
+                          </span>
+                        ));
+                      })()
+                    )}
+                  </td>
+                  <td data-rotulo="Última sessão" style={{ color: 'var(--hb-texto-suave)', fontSize: 'var(--hb-legenda)' }}>
+                    {formatarUltimaSessao(u.ultimaSessao?.toDate() ?? null)}
                   </td>
                   <td data-rotulo="Status">
                     <StatusChip tom={u.ativo ? 'sucesso' : 'erro'}>{u.ativo ? 'Ativo' : 'Inativo'}</StatusChip>
@@ -198,8 +300,10 @@ export default function PaginaUsuarios() {
         >
           {acao.usuario.ativo ? (
             <>
-              O acesso de <strong>{acao.usuario.email}</strong> será bloqueado imediatamente — as regras
-              do banco recusam qualquer leitura de conta inativa. A conta pode ser reativada depois.
+              <strong>{acao.usuario.email}</strong> perde o acesso aos dados imediatamente — as regras do
+              banco recusam qualquer leitura ou gravação de conta inativa. Se estiver com o sistema aberto,
+              a tela atual continua visível até a próxima leitura, que falhará. A conta pode ser reativada
+              depois.
             </>
           ) : (
             <>
