@@ -1,13 +1,15 @@
 // Cria/remove usuários demo temporários para captura de telas da apresentação.
 // Uso: node scripts/usuario-demo.mjs criar|remover
-import { readFileSync } from 'node:fs';
-import { cert, initializeApp } from 'firebase-admin/app';
+// Credencial: serviceAccount.json na raiz ou `firebase login`.
+import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import { obterCredencialAdmin } from './lib/credencial-google.mjs';
 
 const acao = process.argv[2];
-const chave = JSON.parse(readFileSync(new URL('../../serviceAccount.json', import.meta.url), 'utf8'));
-initializeApp({ credential: cert(chave), projectId: chave.project_id });
+const { credential, projeto, limpar } = await obterCredencialAdmin();
+process.on('exit', limpar);
+initializeApp({ credential, projectId: projeto ?? 'gestao-hb' });
 const db = getFirestore();
 const auth = getAuth();
 

@@ -87,6 +87,20 @@
   .pill { display: inline-block; background: #EEF3F8; color: #0F2A43; border-radius: 999px; padding: 1px 9px; font-size: 11px; font-weight: 600; }
   code.url { background: #EEF3F8; color: #0F2A43; padding: 2px 7px; border-radius: 6px; font-size: 11.5px; font-family: Consolas, monospace; }
 
+  /* prints de tela */
+  .print {
+    width: 100%; display: block;
+    border: 1px solid #cdd9e5; border-radius: 10px;
+    box-shadow: 0 3px 14px rgba(15, 42, 67, .12);
+  }
+  .legenda {
+    font-size: 11px; color: #64798f; text-align: center;
+    margin: 2mm 0 4mm; line-height: 1.5;
+  }
+  .fila-celulares { display: flex; gap: 6mm; justify-content: center; }
+  .fila-celulares figure { flex: 1; max-width: 52mm; margin: 0; }
+  .fila-celulares .print { border-radius: 14px; }
+
   /* sumário */
   .sumario td { padding: 3.2mm 3mm; font-size: 13px; }
   .sumario .cap { font-weight: 700; color: #0F2A43; }
@@ -116,15 +130,15 @@
   <table class="sumario">
     <tr><td class="cap">1. Conhecendo o sistema</td><td>O que é, quem usa o quê</td><td class="pg">3</td></tr>
     <tr><td class="cap">2. Primeiro acesso</td><td>Endereços, login, senha, sessão de 24 horas</td><td class="pg">4</td></tr>
-    <tr><td class="cap">3. O Painel</td><td>A primeira tela do gestor e os números do mês</td><td class="pg">5</td></tr>
-    <tr><td class="cap">4. Cadastros</td><td>Indústrias, tabelas de preço, produtos, clientes</td><td class="pg">6</td></tr>
-    <tr><td class="cap">5. Vendedores e usuários</td><td>Contas de acesso, permissões de tabela, foto</td><td class="pg">8</td></tr>
-    <tr><td class="cap">6. Pedidos</td><td>Emitir, acompanhar e entender os status</td><td class="pg">10</td></tr>
-    <tr><td class="cap">7. Financeiro</td><td>Contas a receber e baixa de parcelas</td><td class="pg">11</td></tr>
-    <tr><td class="cap">8. Comissões</td><td>Os dois regimes, fechamento e pagamento</td><td class="pg">12</td></tr>
-    <tr><td class="cap">9. Relatórios e auditoria</td><td>Exportar dados e rastrear ações</td><td class="pg">13</td></tr>
-    <tr><td class="cap">10. Aplicativo do vendedor</td><td>Instalar no celular, emitir pedido, previsão</td><td class="pg">14</td></tr>
-    <tr><td class="cap">11. Perguntas frequentes</td><td>Problemas comuns e como resolver</td><td class="pg">15</td></tr>
+    <tr><td class="cap">3. O Painel</td><td>A primeira tela do gestor e os números do mês</td><td class="pg">6</td></tr>
+    <tr><td class="cap">4. Cadastros</td><td>Indústrias, tabelas de preço, produtos, clientes</td><td class="pg">8</td></tr>
+    <tr><td class="cap">5. Vendedores e usuários</td><td>Contas de acesso, permissões de tabela, foto</td><td class="pg">11</td></tr>
+    <tr><td class="cap">6. Pedidos</td><td>Emitir, acompanhar e entender os status</td><td class="pg">14</td></tr>
+    <tr><td class="cap">7. Financeiro</td><td>Contas a receber e baixa de parcelas</td><td class="pg">16</td></tr>
+    <tr><td class="cap">8. Comissões</td><td>Os dois regimes, fechamento e pagamento</td><td class="pg">17</td></tr>
+    <tr><td class="cap">9. Relatórios e auditoria</td><td>Exportar dados e rastrear ações</td><td class="pg">19</td></tr>
+    <tr><td class="cap">10. Aplicativo do vendedor</td><td>Instalar no celular, emitir pedido, previsão</td><td class="pg">20</td></tr>
+    <tr><td class="cap">11. Perguntas frequentes</td><td>Problemas comuns e como resolver</td><td class="pg">22</td></tr>
   </table>
 
   <div class="caixa dica">
@@ -207,20 +221,40 @@
   <div class="num-pg">4</div>
 </div>
 
+<!-- página: print do login -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 2 · a tela de entrada</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Assim é a tela de login</h2>
+  <img class="print" src="prints/admin-login.png" alt="Tela de login do sistema do escritório">
+  <p class="legenda">Sistema do escritório — informe e-mail e senha; o link “Esqueci minha senha” fica logo abaixo do botão.</p>
+  <ul>
+    <li>Use o <strong>e-mail cadastrado pelo administrador</strong> — ele é o seu login.</li>
+    <li>Errou a senha várias vezes? O sistema bloqueia por alguns minutos por segurança. Aguarde e tente de novo, ou peça um novo link.</li>
+    <li>No celular do vendedor a tela é equivalente, adaptada à tela pequena (capítulo 10).</li>
+  </ul>
+  <div class="num-pg">5</div>
+</div>
+
 <!-- ═══════════ 3. PAINEL ═══════════ -->
 <div class="pagina">
   <div class="cabecalho-pg"><span class="secao">Capítulo 3</span><span class="logo">GESTÃO HB</span></div>
   <h2>O Painel — a primeira tela</h2>
-  <p>Ao entrar no sistema do escritório você cai no <strong>Painel</strong>, um resumo do mês em andamento. Ele responde às perguntas de todo dia sem precisar abrir relatório:</p>
+  <p>Ao entrar no sistema do escritório você cai no <strong>Painel</strong>, um resumo do mês em andamento:</p>
+  <img class="print" src="prints/admin-painel.png" alt="Painel com os números do mês">
+  <p class="legenda">Os quatro números do topo: vendas do mês, comissões a fechar, parcelas vencidas e comissão do escritório.</p>
   <ul>
-    <li><strong>Quanto foi vendido no mês</strong> — total de pedidos emitidos e a quantidade.</li>
-    <li><strong>O que está para receber</strong> — parcelas em aberto no contas a receber.</li>
-    <li><strong>Comissões</strong> — o que já está elegível para fechamento e o que aguarda pagamento de cliente.</li>
-    <li><strong>Últimos pedidos</strong> — os mais recentes, com atalho para o detalhe.</li>
+    <li><strong>Vendas do mês</strong> — total emitido e a quantidade de pedidos.</li>
+    <li><strong>Comissões a fechar</strong> — o que já está elegível para o próximo fechamento.</li>
+    <li><strong>Parcelas vencidas</strong> — o que passou do vencimento sem baixa; a meta é manter em zero.</li>
+    <li><strong>Últimos pedidos</strong> — os mais recentes, com o status em destaque; clique para abrir o detalhe.</li>
   </ul>
+  <div class="num-pg">6</div>
+</div>
 
-  <h3>O menu lateral</h3>
-  <p>Tudo no sistema está a um clique no menu à esquerda. A ordem de cima para baixo segue o fluxo natural do trabalho:</p>
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 3 · continuação</span><span class="logo">GESTÃO HB</span></div>
+  <h2>O menu lateral</h2>
+  <p>Tudo no sistema está a um clique no menu azul à esquerda (visível no print da página anterior). A ordem de cima para baixo segue o fluxo natural do trabalho:</p>
   <table>
     <tr><th style="width:36mm">Item do menu</th><th>Para que serve</th></tr>
     <tr><td>Painel</td><td>Resumo do mês (esta tela).</td></tr>
@@ -240,7 +274,7 @@
     <div class="titulo-caixa">Dica</div>
     <p>Em toda listagem do sistema as linhas são clicáveis — clique em qualquer registro para abrir o detalhe. E toda ação dá retorno visual: uma mensagem verde confirma o que deu certo; uma vermelha explica o que corrigir.</p>
   </div>
-  <div class="num-pg">5</div>
+  <div class="num-pg">7</div>
 </div>
 
 <!-- ═══════════ 4. CADASTROS (2 páginas) ═══════════ -->
@@ -268,7 +302,18 @@
     <div class="titulo-caixa">Atenção — indústrias por grama</div>
     <p>Para Inove e Tendenze, o <strong>peso é obrigatório em todos os itens</strong> — é dele que sai o preço. A importação recusa planilhas sem a coluna de peso nessas indústrias.</p>
   </div>
-  <div class="num-pg">6</div>
+  <div class="num-pg">8</div>
+</div>
+
+<!-- página: prints indústria + produtos -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 4 · as telas</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Indústria e catálogo na prática</h2>
+  <img class="print" src="prints/admin-industria-inove.png" alt="Detalhe da indústria Inove com tabelas de preço e valor do grama" style="width:86%; margin:0 auto;">
+  <p class="legenda">Detalhe da indústria: as tabelas de preço cadastradas e, nas indústrias por grama, o valor vigente com o histórico.</p>
+  <img class="print" src="prints/admin-produtos.png" alt="Listagem de produtos com indústria, peso e categoria" style="width:86%; margin:0 auto;">
+  <p class="legenda">Catálogo de produtos: filtro por indústria, busca por SKU e o peso em destaque — a base do preço por grama.</p>
+  <div class="num-pg">9</div>
 </div>
 
 <div class="pagina">
@@ -294,7 +339,7 @@
     <div class="titulo-caixa">Boa prática</div>
     <p>Padronize os nomes desde o início (ex.: razão social em maiúsculas, fantasia como o cliente é conhecido). Cadastro limpo hoje evita duplicidade e retrabalho na hora de emitir pedido e fechar comissão.</p>
   </div>
-  <div class="num-pg">7</div>
+  <div class="num-pg">10</div>
 </div>
 
 <!-- ═══════════ 5. VENDEDORES E USUÁRIOS (2 páginas) ═══════════ -->
@@ -326,7 +371,18 @@
     <div class="titulo-caixa">Onde conferir rapidamente</div>
     <p>A listagem de <strong>Usuários</strong> mostra, ao lado de cada vendedor, as tabelas liberadas em etiquetas (ex.: <span class="pill">Spart: todas</span> <span class="pill">Inove: VENDAS-900</span>) e a <strong>última vez que a pessoa acessou</strong> o sistema.</p>
   </div>
-  <div class="num-pg">8</div>
+  <div class="num-pg">11</div>
+</div>
+
+<!-- página: prints matriz + usuários -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 5 · as telas</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Permissões e contas na prática</h2>
+  <img class="print" src="prints/admin-vendedor-matriz.png" alt="Cadastro do vendedor com a matriz indústria × tabela" style="width:86%; margin:0 auto;">
+  <p class="legenda">A matriz do vendedor: cada linha libera uma indústria/tabela e define a comissão, o limite de desconto e se pode alterar preço.</p>
+  <img class="print" src="prints/admin-usuarios.png" alt="Listagem de usuários com tabelas liberadas e última sessão" style="width:86%; margin:0 auto;">
+  <p class="legenda">Usuários: busca e filtros no topo; etiquetas de tabelas liberadas e a última sessão de cada conta. “Nenhuma tabela liberada” aparece em vermelho.</p>
+  <div class="num-pg">12</div>
 </div>
 
 <div class="pagina">
@@ -358,7 +414,7 @@
       <li>Toda mudança de perfil, status e permissão fica na auditoria com o valor anterior e o novo.</li>
     </ul>
   </div>
-  <div class="num-pg">9</div>
+  <div class="num-pg">13</div>
 </div>
 
 <!-- ═══════════ 6. PEDIDOS ═══════════ -->
@@ -388,7 +444,18 @@
     <div class="titulo-caixa">Preço congelado</div>
     <p>Depois de emitido, o pedido nunca muda de valor sozinho — nem quando o valor do grama sobe. Alterar um pedido não faturado exige edição explícita, que fica registrada na auditoria.</p>
   </div>
-  <div class="num-pg">10</div>
+  <div class="num-pg">14</div>
+</div>
+
+<!-- página: prints pedidos -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 6 · as telas</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Do formulário ao pedido emitido</h2>
+  <img class="print" src="prints/admin-pedido-novo.png" alt="Formulário de novo pedido" style="width:86%; margin:0 auto;">
+  <p class="legenda">Novo pedido: cliente, vendedor, indústria e tabela primeiro; os itens entram na sequência e o total se atualiza a cada linha.</p>
+  <img class="print" src="prints/admin-pedido-detalhe.png" alt="Detalhe de um pedido emitido" style="width:86%; margin:0 auto;">
+  <p class="legenda">Detalhe do pedido: itens, parcelas e a comissão associada, com o status atual no topo.</p>
+  <div class="num-pg">15</div>
 </div>
 
 <!-- ═══════════ 7. FINANCEIRO ═══════════ -->
@@ -412,11 +479,9 @@
     <p>Nas indústrias Inove, Tendenze e Zarrara, <strong>a comissão só se torna elegível depois que o cliente paga</strong>. Baixa atrasada = comissão atrasada no fechamento. Faça da baixa um hábito diário.</p>
   </div>
 
-  <div class="caixa dica">
-    <div class="titulo-caixa">Leitura rápida da tela</div>
-    <p>Vencida aparece destacada; parcialmente recebida mostra o valor já pago ao lado do total. O painel inicial soma tudo o que está em aberto no mês.</p>
-  </div>
-  <div class="num-pg">11</div>
+  <img class="print" src="prints/admin-financeiro.png" alt="Contas a receber com parcelas e status" style="width:80%; margin:0 auto;">
+  <p class="legenda">Contas a Receber: parcela vencida em destaque; recebimento parcial mostra o valor já pago ao lado do total.</p>
+  <div class="num-pg">16</div>
 </div>
 
 <!-- ═══════════ 8. COMISSÕES ═══════════ -->
@@ -457,7 +522,20 @@
     <div class="titulo-caixa">O vendedor acompanha sozinho</div>
     <p>No aplicativo, o vendedor vê a previsão do mês em duas faixas — o confirmado e o que ainda depende de pagamento de cliente. Menos ligação para o escritório perguntando “quanto vou receber?”.</p>
   </div>
-  <div class="num-pg">12</div>
+  <div class="num-pg">17</div>
+</div>
+
+<!-- página: print comissões -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 8 · a tela</span><span class="logo">GESTÃO HB</span></div>
+  <h2>O fechamento na prática</h2>
+  <img class="print" src="prints/admin-comissoes.png" alt="Tela de comissões com candidatas ao fechamento">
+  <p class="legenda">Comissões: as elegíveis do período já vêm pré-selecionadas pelo regime de cada indústria; o total do fechamento se ajusta conforme você marca e desmarca.</p>
+  <ul>
+    <li>A coluna de status distingue o que é <strong>elegível</strong> do que ainda <strong>aguarda pagamento do cliente</strong>.</li>
+    <li>Os fechamentos anteriores ficam listados abaixo, com o histórico de pagamento.</li>
+  </ul>
+  <div class="num-pg">18</div>
 </div>
 
 <!-- ═══════════ 9. RELATÓRIOS E AUDITORIA ═══════════ -->
@@ -466,12 +544,7 @@
   <h2>Relatórios e auditoria</h2>
 
   <h3>Relatórios</h3>
-  <p>Em <strong>Relatórios</strong>, escolha o tipo, ajuste o período e os filtros e clique em <strong>Exportar CSV</strong> — o arquivo abre direto no Excel. Use para conferências com as indústrias, análise de vendas e conciliação do financeiro.</p>
-  <ul>
-    <li>Vendas por período, por indústria e por vendedor;</li>
-    <li>Situação do contas a receber;</li>
-    <li>Comissões por status, vendedor e período.</li>
-  </ul>
+  <p>Em <strong>Relatórios</strong>, escolha o tipo (vendas por período, indústria ou vendedor; contas a receber; comissões por status), ajuste o período e os filtros e clique em <strong>Exportar CSV</strong> — o arquivo abre direto no Excel. Use para conferências com as indústrias, análise de vendas e conciliação do financeiro.</p>
 
   <h3>Auditoria</h3>
   <p>A tela de <strong>Auditoria</strong> registra automaticamente toda ação relevante: criação e edição de cadastros, emissão e alteração de pedidos, baixas, fechamentos, mudanças de permissão, resets de senha. De cada registro você vê:</p>
@@ -484,7 +557,10 @@
     <div class="titulo-caixa">Registro permanente</div>
     <p>A auditoria é <strong>só leitura e só acréscimo</strong>: nem o administrador consegue editar ou apagar um registro. É a memória oficial do sistema para qualquer conferência futura.</p>
   </div>
-  <div class="num-pg">13</div>
+
+  <img class="print" src="prints/admin-auditoria.png" alt="Registro de auditoria com antes e depois" style="width:76%; margin:0 auto;">
+  <p class="legenda">Auditoria: cada linha diz quem fez o quê e quando; o detalhe mostra os valores de antes e de depois.</p>
+  <div class="num-pg">19</div>
 </div>
 
 <!-- ═══════════ 10. APP DO VENDEDOR ═══════════ -->
@@ -519,7 +595,32 @@
     <div class="titulo-caixa">Sem sinal? Sem problema</div>
     <p>O aplicativo funciona <strong>offline</strong>: dá para montar o pedido dentro do cliente sem internet — ele fica guardado no celular e sincroniza sozinho quando o sinal volta. O rascunho não se perde nem se a sessão expirar.</p>
   </div>
-  <div class="num-pg">14</div>
+  <div class="num-pg">20</div>
+</div>
+
+<!-- página: prints do celular -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 10 · as telas</span><span class="logo">GESTÃO HB</span></div>
+  <h2>O aplicativo no celular</h2>
+  <div class="fila-celulares">
+    <figure>
+      <img class="print" src="prints/vendedor-login.png" alt="Login do aplicativo do vendedor">
+      <figcaption class="legenda">Entrada: e-mail e senha, direto ao ponto.</figcaption>
+    </figure>
+    <figure>
+      <img class="print" src="prints/vendedor-home.png" alt="Tela inicial com previsão de comissão e pedidos">
+      <figcaption class="legenda">Início: previsão do mês em duas faixas e os seus pedidos com status.</figcaption>
+    </figure>
+    <figure>
+      <img class="print" src="prints/vendedor-novo-pedido.png" alt="Emissão de pedido no celular">
+      <figcaption class="legenda">Novo pedido: só as suas tabelas aparecem; o total se atualiza a cada item.</figcaption>
+    </figure>
+  </div>
+  <div class="caixa" style="margin-top:5mm">
+    <div class="titulo-caixa">Botão +</div>
+    <p>O botão azul flutuante no canto inferior direito da tela inicial abre a emissão de pedido ou orçamento — o caminho mais usado do aplicativo.</p>
+  </div>
+  <div class="num-pg">21</div>
 </div>
 
 <!-- ═══════════ 11. FAQ ═══════════ -->
@@ -554,7 +655,7 @@
   </table>
 
   <div class="rodape-doc">Gestão HB · Manual de Uso · julho/2026</div>
-  <div class="num-pg">15</div>
+  <div class="num-pg">22</div>
 </div>
 
 </body>
