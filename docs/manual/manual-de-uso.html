@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Gestão HB — Manual de Uso</title>
+<style>
+  /* Identidade HB (especificação §6): primária #0F2A43, ação #1A73E8, fundo #EEF3F8, acento #F7F3EA */
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { font-family: 'Segoe UI', Inter, Roboto, Arial, sans-serif; color: #1c2b3a; }
+
+  .pagina {
+    width: 210mm; height: 296mm;
+    padding: 18mm 20mm 16mm;
+    page-break-after: always;
+    position: relative;
+    background: #fff;
+    overflow: hidden;
+  }
+  .pagina:last-child { page-break-after: avoid; }
+
+  /* ---------- capa ---------- */
+  .capa {
+    background: linear-gradient(160deg, #0F2A43 0%, #16406b 100%);
+    color: #fff;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 26mm 22mm;
+  }
+  .capa .marca { font-size: 15px; letter-spacing: 4px; text-transform: uppercase; color: #F7F3EA; opacity: .9; }
+  .capa h1 { font-size: 46px; line-height: 1.15; font-weight: 700; margin-top: 8mm; }
+  .capa .sub { font-size: 19px; color: #cfe0f2; margin-top: 6mm; max-width: 130mm; line-height: 1.5; }
+  .capa .selo {
+    margin-top: 12mm; display: inline-block; align-self: flex-start;
+    background: #F7F3EA; color: #0F2A43; font-weight: 600; font-size: 13px;
+    padding: 8px 18px; border-radius: 999px;
+  }
+  .capa .rodape-capa { font-size: 12px; color: #9db8d4; line-height: 1.7; }
+
+  /* ---------- estrutura comum ---------- */
+  .cabecalho-pg {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 3px solid #0F2A43; padding-bottom: 5mm; margin-bottom: 8mm;
+  }
+  .cabecalho-pg .secao { font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase; color: #1A73E8; font-weight: 700; }
+  .cabecalho-pg .logo { font-size: 12px; letter-spacing: 2px; color: #0F2A43; font-weight: 700; }
+  h2 { font-size: 27px; color: #0F2A43; margin-bottom: 5mm; }
+  h3 { font-size: 15.5px; color: #0F2A43; margin: 6mm 0 2.5mm; }
+  p, li { font-size: 12.5px; line-height: 1.62; color: #33465c; }
+  ul, ol { margin: 2mm 0 3mm 6mm; }
+  li { margin-bottom: 1.4mm; }
+  strong { color: #0F2A43; }
+  .num-pg { position: absolute; bottom: 9mm; right: 20mm; font-size: 10.5px; color: #8aa0b8; }
+  .rodape-doc { position: absolute; bottom: 9mm; left: 20mm; font-size: 10.5px; color: #8aa0b8; }
+
+  /* caixas */
+  .caixa {
+    border-radius: 10px; padding: 5mm 6mm; margin: 4mm 0;
+    background: #EEF3F8; border-left: 4px solid #1A73E8;
+  }
+  .caixa.dica { background: #F7F3EA; border-left-color: #b8933d; }
+  .caixa.atencao { background: #fdeeee; border-left-color: #c0392b; }
+  .caixa .titulo-caixa { font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1.5mm; color: #0F2A43; }
+  .caixa p, .caixa li { font-size: 12px; }
+
+  /* passos numerados */
+  .passos { counter-reset: passo; list-style: none; margin-left: 0; }
+  .passos li {
+    counter-increment: passo; position: relative;
+    padding-left: 11mm; margin-bottom: 3mm; list-style: none;
+  }
+  .passos li::before {
+    content: counter(passo);
+    position: absolute; left: 0; top: 0;
+    width: 7.5mm; height: 7.5mm; border-radius: 50%;
+    background: #1A73E8; color: #fff; font-weight: 700; font-size: 12.5px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* tabela simples */
+  table { width: 100%; border-collapse: collapse; margin: 3mm 0; }
+  th { background: #0F2A43; color: #fff; font-size: 11.5px; text-align: left; padding: 2.6mm 3mm; }
+  td { font-size: 11.8px; padding: 2.4mm 3mm; border-bottom: 1px solid #dbe5ee; color: #33465c; vertical-align: top; }
+  tr:nth-child(even) td { background: #f6f9fc; }
+
+  .duas-col { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+
+  .pill { display: inline-block; background: #EEF3F8; color: #0F2A43; border-radius: 999px; padding: 1px 9px; font-size: 11px; font-weight: 600; }
+  code.url { background: #EEF3F8; color: #0F2A43; padding: 2px 7px; border-radius: 6px; font-size: 11.5px; font-family: Consolas, monospace; }
+
+  /* sumário */
+  .sumario td { padding: 3.2mm 3mm; font-size: 13px; }
+  .sumario .cap { font-weight: 700; color: #0F2A43; }
+  .sumario .pg { text-align: right; color: #1A73E8; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ CAPA ═══════════ -->
+<div class="pagina capa">
+  <div>
+    <div class="marca">HB Representações</div>
+    <h1>Gestão HB<br>Manual de Uso</h1>
+    <p class="sub">Guia de treinamento passo a passo do sistema de gestão de pedidos, financeiro e comissões — para quem nunca acessou o sistema.</p>
+    <span class="selo">Treinamento · Julho de 2026</span>
+  </div>
+  <div class="rodape-capa">
+    Sistema web do escritório (admin) + aplicativo do vendedor (celular)<br>
+    Documento interno — não distribuir fora da equipe
+  </div>
+</div>
+
+<!-- ═══════════ SUMÁRIO ═══════════ -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Sumário</span><span class="logo">GESTÃO HB</span></div>
+  <h2>O que você vai aprender</h2>
+  <table class="sumario">
+    <tr><td class="cap">1. Conhecendo o sistema</td><td>O que é, quem usa o quê</td><td class="pg">3</td></tr>
+    <tr><td class="cap">2. Primeiro acesso</td><td>Endereços, login, senha, sessão de 24 horas</td><td class="pg">4</td></tr>
+    <tr><td class="cap">3. O Painel</td><td>A primeira tela do gestor e os números do mês</td><td class="pg">5</td></tr>
+    <tr><td class="cap">4. Cadastros</td><td>Indústrias, tabelas de preço, produtos, clientes</td><td class="pg">6</td></tr>
+    <tr><td class="cap">5. Vendedores e usuários</td><td>Contas de acesso, permissões de tabela, foto</td><td class="pg">8</td></tr>
+    <tr><td class="cap">6. Pedidos</td><td>Emitir, acompanhar e entender os status</td><td class="pg">10</td></tr>
+    <tr><td class="cap">7. Financeiro</td><td>Contas a receber e baixa de parcelas</td><td class="pg">11</td></tr>
+    <tr><td class="cap">8. Comissões</td><td>Os dois regimes, fechamento e pagamento</td><td class="pg">12</td></tr>
+    <tr><td class="cap">9. Relatórios e auditoria</td><td>Exportar dados e rastrear ações</td><td class="pg">13</td></tr>
+    <tr><td class="cap">10. Aplicativo do vendedor</td><td>Instalar no celular, emitir pedido, previsão</td><td class="pg">14</td></tr>
+    <tr><td class="cap">11. Perguntas frequentes</td><td>Problemas comuns e como resolver</td><td class="pg">15</td></tr>
+  </table>
+
+  <div class="caixa dica">
+    <div class="titulo-caixa">Como usar este manual</div>
+    <p>Se você é do <strong>escritório (administrador)</strong>, leia tudo na ordem. Se você é <strong>vendedor</strong>, os seus capítulos são o 2 (primeiro acesso) e o 10 (aplicativo do celular) — o resto é útil para entender o todo, mas não é obrigatório.</p>
+  </div>
+  <div class="num-pg">2</div>
+</div>
+
+<!-- ═══════════ 1. CONHECENDO ═══════════ -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 1</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Conhecendo o sistema</h2>
+  <p>O Gestão HB organiza todo o ciclo da representação comercial de joias: cadastros, emissão de pedidos e orçamentos, contas a receber e comissões. Ele substitui o sistema anterior (SuasVendas) e é formado por <strong>duas partes que conversam entre si</strong>:</p>
+
+  <div class="duas-col" style="margin-top:5mm">
+    <div class="caixa" style="margin:0">
+      <div class="titulo-caixa">🖥️ Sistema do escritório (admin)</div>
+      <p>Usado no computador, pelo gestor e pela equipe administrativa. É onde ficam os cadastros, o financeiro, as comissões, os relatórios e a gestão das contas de acesso.</p>
+    </div>
+    <div class="caixa" style="margin:0">
+      <div class="titulo-caixa">📱 Aplicativo do vendedor</div>
+      <p>Usado no celular, na rua ou no cliente. O vendedor vê os próprios pedidos, emite pedido novo e acompanha a previsão de comissão do mês. Funciona mesmo sem sinal — sincroniza depois.</p>
+    </div>
+  </div>
+
+  <h3>Quem vê o quê</h3>
+  <ul>
+    <li><strong>Administrador</strong> — acesso total: todos os cadastros, todos os pedidos, financeiro, comissões e usuários.</li>
+    <li><strong>Vendedor</strong> — enxerga apenas <strong>os próprios pedidos</strong> e as <strong>tabelas de preço liberadas para ele</strong>. Essa regra vale de verdade: é aplicada pelo servidor, não é só a tela que esconde.</li>
+  </ul>
+
+  <h3>Ideias que aparecem o tempo todo</h3>
+  <table>
+    <tr><th style="width:34mm">Termo</th><th>O que significa</th></tr>
+    <tr><td><strong>Indústria</strong></td><td>O fornecedor representado (Spart, Anéis Brasil, Inove, Tendenze, Zarrara e outras).</td></tr>
+    <tr><td><strong>Tabela de preço</strong></td><td>Cada indústria tem até 4 tabelas (ex.: VENDAS-900, HERI-700). O preço do produto depende da tabela usada.</td></tr>
+    <tr><td><strong>Valor do grama</strong></td><td>Nas indústrias Inove e Tendenze o preço é calculado por peso: <em>preço = peso × valor do grama</em>. O valor do grama muda com o tempo, e cada pedido guarda o valor da época — pedido antigo nunca muda de preço.</td></tr>
+    <tr><td><strong>Regime de comissão</strong></td><td>Define quando a comissão vira pagamento. Há dois: mensal fixo e pós-recebimento (capítulo 8).</td></tr>
+    <tr><td><strong>Auditoria</strong></td><td>Registro automático de toda ação importante: quem fez, quando e o que mudou. Ninguém consegue apagar.</td></tr>
+  </table>
+  <div class="num-pg">3</div>
+</div>
+
+<!-- ═══════════ 2. PRIMEIRO ACESSO ═══════════ -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 2</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Primeiro acesso</h2>
+
+  <h3>Endereços</h3>
+  <table>
+    <tr><th style="width:44mm">Quem</th><th>Onde acessar</th></tr>
+    <tr><td>Escritório (admin)</td><td><code class="url">gestao-hb-admin.diretriztecnologia.workers.dev</code></td></tr>
+    <tr><td>Vendedor (celular)</td><td><code class="url">gestao-hb-vendedor.diretriztecnologia.workers.dev</code></td></tr>
+  </table>
+
+  <h3>Entrando pela primeira vez</h3>
+  <ol class="passos">
+    <li>O administrador cadastra a sua conta e o sistema envia um <strong>e-mail com um link para você definir a sua senha</strong>. Ninguém conhece a sua senha — nem o administrador.</li>
+    <li>Abra o e-mail, clique no link e escolha uma senha forte. Se o e-mail não chegar em alguns minutos, olhe a caixa de spam.</li>
+    <li>Entre no endereço acima com o seu <strong>e-mail</strong> e a <strong>senha</strong> que você criou.</li>
+  </ol>
+
+  <h3>Esqueci a senha</h3>
+  <p>Na tela de login, use a opção <strong>“Esqueci minha senha”</strong> e informe o seu e-mail — o link de redefinição chega na hora. O administrador também pode disparar esse mesmo e-mail pela área de usuários.</p>
+
+  <div class="caixa">
+    <div class="titulo-caixa">Sessão de 24 horas</div>
+    <p>Por segurança, o sistema pede login novamente a cada 24 horas. Se algo parar de carregar depois de um dia inteiro logado, é só entrar de novo — nada se perde.</p>
+  </div>
+
+  <div class="caixa atencao">
+    <div class="titulo-caixa">Regras de segurança da equipe</div>
+    <ul>
+      <li>Senha é individual — nunca compartilhe nem anote em lugar visível.</li>
+      <li>Cada pessoa tem a própria conta. Não use a conta de um colega “só para agilizar”: toda ação fica registrada em nome de quem está logado.</li>
+      <li>Ao sair de um computador compartilhado, clique em <strong>Sair</strong>.</li>
+    </ul>
+  </div>
+  <div class="num-pg">4</div>
+</div>
+
+<!-- ═══════════ 3. PAINEL ═══════════ -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 3</span><span class="logo">GESTÃO HB</span></div>
+  <h2>O Painel — a primeira tela</h2>
+  <p>Ao entrar no sistema do escritório você cai no <strong>Painel</strong>, um resumo do mês em andamento. Ele responde às perguntas de todo dia sem precisar abrir relatório:</p>
+  <ul>
+    <li><strong>Quanto foi vendido no mês</strong> — total de pedidos emitidos e a quantidade.</li>
+    <li><strong>O que está para receber</strong> — parcelas em aberto no contas a receber.</li>
+    <li><strong>Comissões</strong> — o que já está elegível para fechamento e o que aguarda pagamento de cliente.</li>
+    <li><strong>Últimos pedidos</strong> — os mais recentes, com atalho para o detalhe.</li>
+  </ul>
+
+  <h3>O menu lateral</h3>
+  <p>Tudo no sistema está a um clique no menu à esquerda. A ordem de cima para baixo segue o fluxo natural do trabalho:</p>
+  <table>
+    <tr><th style="width:36mm">Item do menu</th><th>Para que serve</th></tr>
+    <tr><td>Painel</td><td>Resumo do mês (esta tela).</td></tr>
+    <tr><td>Pedidos</td><td>Emitir e acompanhar pedidos e orçamentos.</td></tr>
+    <tr><td>Clientes</td><td>Joalherias e lojistas atendidos, com contatos e categorias.</td></tr>
+    <tr><td>Produtos</td><td>Catálogo por indústria, com importação por planilha.</td></tr>
+    <tr><td>Indústrias</td><td>Fornecedores, tabelas de preço e valor do grama.</td></tr>
+    <tr><td>Vendedores</td><td>Cadastro comercial e permissões de tabela por vendedor.</td></tr>
+    <tr><td>Financeiro</td><td>Contas a receber e baixa de parcelas.</td></tr>
+    <tr><td>Comissões</td><td>Fechamento por período e vendedor.</td></tr>
+    <tr><td>Relatórios</td><td>Exportações em planilha (CSV).</td></tr>
+    <tr><td>Usuários</td><td>Contas de acesso ao sistema.</td></tr>
+    <tr><td>Auditoria</td><td>Registro de tudo o que foi feito, por quem e quando.</td></tr>
+  </table>
+
+  <div class="caixa dica">
+    <div class="titulo-caixa">Dica</div>
+    <p>Em toda listagem do sistema as linhas são clicáveis — clique em qualquer registro para abrir o detalhe. E toda ação dá retorno visual: uma mensagem verde confirma o que deu certo; uma vermelha explica o que corrigir.</p>
+  </div>
+  <div class="num-pg">5</div>
+</div>
+
+<!-- ═══════════ 4. CADASTROS (2 páginas) ═══════════ -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 4</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Cadastros — a base de tudo</h2>
+  <p>A ordem importa: <strong>indústria → tabelas de preço → produtos → clientes</strong>. Sem tabela não há onde colocar preço; sem produto e cliente não há pedido.</p>
+
+  <h3>Indústrias</h3>
+  <p>Em <strong>Indústrias</strong> ficam os fornecedores representados. Abra uma indústria para configurar:</p>
+  <ul>
+    <li><strong>Dados gerais</strong> — nome, CNPJ (quando houver) e o <strong>regime de comissão</strong> (capítulo 8).</li>
+    <li><strong>Tabelas de preço</strong> — cadastre até 4 por indústria (ex.: VENDAS-900, HERI-700). São elas que os vendedores enxergam, conforme a permissão de cada um.</li>
+    <li><strong>Valor do grama</strong> — só para as indústrias que vendem por peso (Inove e Tendenze). Informe o valor vigente; o sistema guarda o histórico com a data de início de cada valor. <strong>Nunca é preciso “corrigir” pedido antigo</strong>: cada pedido congela o valor do grama do dia da emissão.</li>
+  </ul>
+
+  <h3>Produtos</h3>
+  <p>O catálogo pode ser montado de duas formas:</p>
+  <ol class="passos">
+    <li><strong>Um a um</strong> — botão “Novo produto”: código (SKU), nome, indústria, peso (nas indústrias por grama), teor e categoria; depois o preço em cada tabela.</li>
+    <li><strong>Por planilha (recomendado)</strong> — em <strong>Produtos → Importar</strong>, envie um arquivo Excel ou CSV com as colunas <span class="pill">sku</span> <span class="pill">nome</span> <span class="pill">peso (g)</span> <span class="pill">teor</span> <span class="pill">categoria</span> <span class="pill">preco</span>. Escolha a indústria e a tabela de destino, confira a prévia (o sistema aponta as linhas com erro antes de gravar) e confirme. Repita para cada tabela.</li>
+  </ol>
+
+  <div class="caixa atencao">
+    <div class="titulo-caixa">Atenção — indústrias por grama</div>
+    <p>Para Inove e Tendenze, o <strong>peso é obrigatório em todos os itens</strong> — é dele que sai o preço. A importação recusa planilhas sem a coluna de peso nessas indústrias.</p>
+  </div>
+  <div class="num-pg">6</div>
+</div>
+
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 4 · continuação</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Clientes</h2>
+  <p>Em <strong>Clientes</strong> ficam as joalherias e lojistas. O cadastro aceita <strong>pessoa jurídica ou física</strong> (CNPJ ou CPF), endereço completo, o vendedor responsável e a categoria.</p>
+
+  <h3>Cadastrando um cliente</h3>
+  <ol class="passos">
+    <li>Clique em <strong>+ Novo cliente</strong>.</li>
+    <li>Escolha PJ ou PF e preencha razão social (ou nome), documento e endereço com cidade e UF.</li>
+    <li>Indique o <strong>vendedor responsável</strong> — é ele quem verá este cliente no aplicativo.</li>
+    <li>Salve. Depois, dentro do cliente, adicione os <strong>contatos</strong>: nome, cargo, telefone e e-mail de cada pessoa com quem vocês falam.</li>
+  </ol>
+
+  <h3>Categorias</h3>
+  <p>Em <strong>Clientes → Categorias</strong> você mantém as classificações usadas para agrupar clientes nos relatórios (por exemplo: atacado, varejo, revenda). Crie as categorias antes de usá-las nos cadastros.</p>
+
+  <h3>Buscando</h3>
+  <p>Todas as listagens têm <strong>busca por texto e filtros</strong> no topo — por status, vendedor ou categoria, conforme a tela. Quando a busca não encontra nada, o sistema oferece o botão “Limpar filtros”.</p>
+
+  <div class="caixa dica">
+    <div class="titulo-caixa">Boa prática</div>
+    <p>Padronize os nomes desde o início (ex.: razão social em maiúsculas, fantasia como o cliente é conhecido). Cadastro limpo hoje evita duplicidade e retrabalho na hora de emitir pedido e fechar comissão.</p>
+  </div>
+  <div class="num-pg">7</div>
+</div>
+
+<!-- ═══════════ 5. VENDEDORES E USUÁRIOS (2 páginas) ═══════════ -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 5</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Vendedores e usuários</h2>
+  <p>São <strong>dois cadastros diferentes e complementares</strong> — entender essa separação evita a maior parte das dúvidas:</p>
+  <div class="duas-col">
+    <div class="caixa" style="margin:0">
+      <div class="titulo-caixa">Vendedores (cadastro comercial)</div>
+      <p>Quem vende: nome, regiões, e principalmente <strong>o que pode vender</strong> — as tabelas liberadas e o percentual de comissão de cada uma.</p>
+    </div>
+    <div class="caixa" style="margin:0">
+      <div class="titulo-caixa">Usuários (conta de acesso)</div>
+      <p>Quem entra no sistema: e-mail de login, perfil (administrador ou vendedor) e status. A conta de vendedor é <strong>vinculada</strong> ao cadastro comercial.</p>
+    </div>
+  </div>
+
+  <h3>Permissões de tabela — o coração do controle</h3>
+  <p>Dentro do vendedor, monte a matriz <strong>indústria × tabela</strong>. Para cada linha você define:</p>
+  <ul>
+    <li><strong>Indústria e tabela</strong> — qual catálogo ele enxerga (ou “todas as tabelas” da indústria);</li>
+    <li><strong>% de comissão</strong> — o percentual dele naquela tabela;</li>
+    <li><strong>Limite de desconto</strong> e se ele <strong>pode alterar preço</strong> no pedido.</li>
+  </ul>
+  <p>O efeito é imediato: na próxima tela que o vendedor abrir no celular, ele só verá o que estiver liberado aqui. Um vendedor sem nenhuma tabela liberada vê um aviso orientando a falar com o gestor.</p>
+
+  <div class="caixa">
+    <div class="titulo-caixa">Onde conferir rapidamente</div>
+    <p>A listagem de <strong>Usuários</strong> mostra, ao lado de cada vendedor, as tabelas liberadas em etiquetas (ex.: <span class="pill">Spart: todas</span> <span class="pill">Inove: VENDAS-900</span>) e a <strong>última vez que a pessoa acessou</strong> o sistema.</p>
+  </div>
+  <div class="num-pg">8</div>
+</div>
+
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 5 · continuação</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Gerenciando as contas de acesso</h2>
+
+  <h3>Criando um usuário</h3>
+  <ol class="passos">
+    <li>Em <strong>Usuários</strong>, clique em <strong>+ Novo usuário</strong>.</li>
+    <li>Preencha nome, e-mail (será o login) e telefone.</li>
+    <li>Escolha o <strong>perfil</strong>: administrador (acesso total) ou vendedor.</li>
+    <li>Se for vendedor, <strong>vincule ao cadastro comercial</strong> correspondente — é obrigatório.</li>
+    <li>Salve. A pessoa recebe por e-mail o link para definir a própria senha. <strong>Nenhuma senha aparece na tela em momento algum.</strong></li>
+  </ol>
+
+  <h3>Ações do dia a dia</h3>
+  <table>
+    <tr><th style="width:42mm">Ação</th><th>Como funciona</th></tr>
+    <tr><td><strong>Reset de senha</strong></td><td>Botão na listagem → confirmação mostrando o e-mail de destino → a pessoa recebe o link. Fica registrado na auditoria.</td></tr>
+    <tr><td><strong>Desativar</strong></td><td>Bloqueia o acesso aos dados imediatamente. A conta pode ser reativada depois, com o mesmo histórico.</td></tr>
+    <tr><td><strong>Foto de perfil</strong></td><td>Cada pessoa adiciona a própria foto ao abrir o próprio cadastro — a imagem é recortada em quadrado automaticamente (até 5 MB).</td></tr>
+  </table>
+
+  <div class="caixa atencao">
+    <div class="titulo-caixa">Travas de segurança automáticas</div>
+    <ul>
+      <li>Você <strong>não consegue desativar a própria conta</strong>, nem rebaixar o próprio perfil.</li>
+      <li>O sistema <strong>impede desativar o último administrador ativo</strong> — cadastre outro admin antes.</li>
+      <li>Toda mudança de perfil, status e permissão fica na auditoria com o valor anterior e o novo.</li>
+    </ul>
+  </div>
+  <div class="num-pg">9</div>
+</div>
+
+<!-- ═══════════ 6. PEDIDOS ═══════════ -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 6</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Pedidos e orçamentos</h2>
+  <p>O pedido pode nascer no escritório (este capítulo) ou no celular do vendedor (capítulo 10) — o fluxo é o mesmo. <strong>Nada é gravado até você confirmar a emissão</strong>, então dá para montar e revisar com calma.</p>
+
+  <h3>Emitindo um pedido</h3>
+  <ol class="passos">
+    <li>Em <strong>Pedidos</strong>, clique em <strong>+ Novo</strong> e escolha o tipo: <strong>pedido</strong> ou <strong>orçamento</strong>.</li>
+    <li>Selecione o <strong>cliente</strong> e o <strong>vendedor</strong>.</li>
+    <li>Escolha a <strong>indústria e a tabela de preço</strong> — isso define os preços de todos os itens.</li>
+    <li>Adicione os itens pelo código ou nome. Nas indústrias por grama, o preço sai de <em>peso × valor do grama vigente</em>, calculado na hora.</li>
+    <li>Informe a <strong>condição de pagamento</strong> (à vista ou parcelado — as parcelas do financeiro nascem daqui).</li>
+    <li>Revise o total e <strong>confirme a emissão</strong>. O pedido recebe um número sequencial e congela os preços do dia.</li>
+  </ol>
+
+  <h3>Acompanhando</h3>
+  <p>A listagem mostra número, cliente, vendedor, indústria, total e o status atual. Os status seguem a vida real do pedido:</p>
+  <p style="margin-top:2mm">
+    <span class="pill">Emitido</span> → <span class="pill">Enviado à indústria</span> → <span class="pill">Faturado</span> → <span class="pill">Entregue</span>
+  </p>
+  <p style="margin-top:2mm">Abra qualquer pedido para ver os itens, as parcelas e a comissão associada. Orçamento aceito vira pedido — na conversão, o sistema pergunta se mantém os preços do orçamento ou atualiza para os atuais.</p>
+
+  <div class="caixa">
+    <div class="titulo-caixa">Preço congelado</div>
+    <p>Depois de emitido, o pedido nunca muda de valor sozinho — nem quando o valor do grama sobe. Alterar um pedido não faturado exige edição explícita, que fica registrada na auditoria.</p>
+  </div>
+  <div class="num-pg">10</div>
+</div>
+
+<!-- ═══════════ 7. FINANCEIRO ═══════════ -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 7</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Financeiro — Contas a Receber</h2>
+  <p>Cada pedido gera automaticamente as suas parcelas no contas a receber, conforme a condição de pagamento escolhida na emissão (ex.: “2 de 3” é a segunda de três parcelas). A tela de <strong>Financeiro</strong> lista tudo o que há para receber, com filtros por status e vencimento.</p>
+
+  <h3>Dando baixa em uma parcela</h3>
+  <p>Quando o cliente paga, registre o recebimento:</p>
+  <ol class="passos">
+    <li>Localize a parcela na lista (use a busca ou os filtros de vencimento).</li>
+    <li>Clique em <strong>Receber</strong>.</li>
+    <li>Confira o <strong>valor</strong> — o sistema sugere o saldo em aberto, mas aceita <strong>recebimento parcial</strong>: se o cliente pagou metade, registre metade e a parcela continua aberta pelo restante.</li>
+    <li>Informe a <strong>forma de pagamento</strong> (PIX, transferência, boleto…) e a <strong>data</strong>.</li>
+    <li>Confirme. A parcela muda de status e, nas indústrias de regime pós-recebimento, a comissão correspondente avança junto (capítulo 8).</li>
+  </ol>
+
+  <div class="caixa atencao">
+    <div class="titulo-caixa">Por que a baixa é tão importante</div>
+    <p>Nas indústrias Inove, Tendenze e Zarrara, <strong>a comissão só se torna elegível depois que o cliente paga</strong>. Baixa atrasada = comissão atrasada no fechamento. Faça da baixa um hábito diário.</p>
+  </div>
+
+  <div class="caixa dica">
+    <div class="titulo-caixa">Leitura rápida da tela</div>
+    <p>Vencida aparece destacada; parcialmente recebida mostra o valor já pago ao lado do total. O painel inicial soma tudo o que está em aberto no mês.</p>
+  </div>
+  <div class="num-pg">11</div>
+</div>
+
+<!-- ═══════════ 8. COMISSÕES ═══════════ -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 8</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Comissões</h2>
+  <p>Cada indústria trabalha em um de <strong>dois regimes</strong>, e o sistema classifica tudo sozinho — mas quem opera precisa entender a diferença:</p>
+
+  <div class="duas-col">
+    <div class="caixa" style="margin:0">
+      <div class="titulo-caixa">Regime A — Mensal fixo</div>
+      <p><strong>Spart e Anéis Brasil.</strong> Todo pedido <strong>emitido no mês</strong> gera comissão daquele mês, <strong>independente de o cliente ter pago</strong>. O pagamento ao vendedor acontece no dia 15 do mês seguinte.</p>
+    </div>
+    <div class="caixa" style="margin:0">
+      <div class="titulo-caixa">Regime B — Pós-recebimento</div>
+      <p><strong>Inove, Tendenze e Zarrara.</strong> A comissão só fica <strong>elegível quando o cliente paga</strong> a parcela. Pagou, entra no próximo fechamento; não pagou, fica “aguardando pagamento do cliente”.</p>
+    </div>
+  </div>
+
+  <h3>Fazendo um fechamento</h3>
+  <ol class="passos">
+    <li>Em <strong>Comissões</strong>, escolha o <strong>período</strong> e o <strong>vendedor</strong>.</li>
+    <li>O sistema <strong>pré-seleciona automaticamente</strong> as comissões elegíveis pelo regime de cada indústria. Você pode marcar ou desmarcar caso a caso.</li>
+    <li>Confira o total e <strong>confirme o fechamento</strong>. As comissões ficam agrupadas e travadas nele.</li>
+    <li>Quando pagar o vendedor, marque o fechamento como <strong>pago</strong>, com a data.</li>
+  </ol>
+
+  <h3>Status que você vai ver</h3>
+  <p>
+    <span class="pill">Aguardando pagto do cliente</span> →
+    <span class="pill">Elegível</span> →
+    <span class="pill">Fechada</span> →
+    <span class="pill">Paga</span>
+  </p>
+  <p style="margin-top:2mm">Se um pedido for cancelado ou devolvido depois, a comissão correspondente é <strong>estornada</strong> e aparece com esse status no histórico.</p>
+
+  <div class="caixa dica">
+    <div class="titulo-caixa">O vendedor acompanha sozinho</div>
+    <p>No aplicativo, o vendedor vê a previsão do mês em duas faixas — o confirmado e o que ainda depende de pagamento de cliente. Menos ligação para o escritório perguntando “quanto vou receber?”.</p>
+  </div>
+  <div class="num-pg">12</div>
+</div>
+
+<!-- ═══════════ 9. RELATÓRIOS E AUDITORIA ═══════════ -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 9</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Relatórios e auditoria</h2>
+
+  <h3>Relatórios</h3>
+  <p>Em <strong>Relatórios</strong>, escolha o tipo, ajuste o período e os filtros e clique em <strong>Exportar CSV</strong> — o arquivo abre direto no Excel. Use para conferências com as indústrias, análise de vendas e conciliação do financeiro.</p>
+  <ul>
+    <li>Vendas por período, por indústria e por vendedor;</li>
+    <li>Situação do contas a receber;</li>
+    <li>Comissões por status, vendedor e período.</li>
+  </ul>
+
+  <h3>Auditoria</h3>
+  <p>A tela de <strong>Auditoria</strong> registra automaticamente toda ação relevante: criação e edição de cadastros, emissão e alteração de pedidos, baixas, fechamentos, mudanças de permissão, resets de senha. De cada registro você vê:</p>
+  <ul>
+    <li><strong>Quem</strong> fez (usuário e perfil), <strong>quando</strong> (data e hora do servidor) e <strong>de onde</strong> (sistema do escritório ou aplicativo);</li>
+    <li><strong>O que mudou</strong> — os valores de antes e de depois, lado a lado.</li>
+  </ul>
+
+  <div class="caixa">
+    <div class="titulo-caixa">Registro permanente</div>
+    <p>A auditoria é <strong>só leitura e só acréscimo</strong>: nem o administrador consegue editar ou apagar um registro. É a memória oficial do sistema para qualquer conferência futura.</p>
+  </div>
+  <div class="num-pg">13</div>
+</div>
+
+<!-- ═══════════ 10. APP DO VENDEDOR ═══════════ -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 10</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Aplicativo do vendedor</h2>
+  <p>O aplicativo roda no navegador do celular e pode ser <strong>instalado como um app</strong>, com ícone na tela inicial — sem loja de aplicativos.</p>
+
+  <h3>Instalando no celular</h3>
+  <ol class="passos">
+    <li>Abra <code class="url">gestao-hb-vendedor.diretriztecnologia.workers.dev</code> no navegador do celular (Chrome no Android, Safari no iPhone).</li>
+    <li>No <strong>Android</strong>: toque no menu ⋮ → <strong>“Adicionar à tela inicial”</strong> (ou aceite o convite de instalação que aparece sozinho). No <strong>iPhone</strong>: botão de compartilhar → <strong>“Adicionar à Tela de Início”</strong>.</li>
+    <li>Entre com o seu e-mail e senha. Pronto — o ícone fica na tela inicial como qualquer app.</li>
+  </ol>
+
+  <h3>A tela inicial</h3>
+  <ul>
+    <li><strong>Seus pedidos</strong> — a lista dos seus pedidos e orçamentos, do mais recente para o mais antigo. Toque para abrir o detalhe com itens e status.</li>
+    <li><strong>Previsão de comissão do mês</strong> — em duas faixas: o <strong>confirmado</strong> e o que <strong>aguarda pagamento do cliente</strong>.</li>
+    <li><strong>Botão +</strong> — emite um pedido ou orçamento novo.</li>
+  </ul>
+
+  <h3>Emitindo um pedido na rua</h3>
+  <ol class="passos">
+    <li>Toque no <strong>+</strong> e escolha pedido ou orçamento.</li>
+    <li>Selecione o cliente, a indústria e a tabela — você só vê <strong>as tabelas liberadas para você</strong>.</li>
+    <li>Adicione os itens; o total se atualiza a cada item.</li>
+    <li>Escolha a condição de pagamento e <strong>confirme</strong>. O escritório enxerga o pedido na hora.</li>
+  </ol>
+
+  <div class="caixa dica">
+    <div class="titulo-caixa">Sem sinal? Sem problema</div>
+    <p>O aplicativo funciona <strong>offline</strong>: dá para montar o pedido dentro do cliente sem internet — ele fica guardado no celular e sincroniza sozinho quando o sinal volta. O rascunho não se perde nem se a sessão expirar.</p>
+  </div>
+  <div class="num-pg">14</div>
+</div>
+
+<!-- ═══════════ 11. FAQ ═══════════ -->
+<div class="pagina">
+  <div class="cabecalho-pg"><span class="secao">Capítulo 11</span><span class="logo">GESTÃO HB</span></div>
+  <h2>Perguntas frequentes</h2>
+
+  <h3>“Não consigo entrar.”</h3>
+  <p>Confira o e-mail digitado e use “Esqueci minha senha” para receber um link novo. Se a mensagem for <em>“conta desativada”</em>, fale com o administrador — só ele reativa. Muitas tentativas seguidas bloqueiam por alguns minutos: aguarde e tente de novo.</p>
+
+  <h3>“O sistema me pediu login de novo no meio do dia.”</h3>
+  <p>É a sessão de 24 horas (capítulo 2). Entre novamente — nada do que foi salvo se perde.</p>
+
+  <h3>“O vendedor não vê os produtos de uma indústria.”</h3>
+  <p>Quase sempre é permissão: abra <strong>Vendedores</strong>, entre no cadastro dele e confira se a tabela daquela indústria está na matriz. A listagem de <strong>Usuários</strong> mostra as etiquetas de tabelas liberadas de cada um — é o jeito mais rápido de conferir.</p>
+
+  <h3>“Emiti um pedido com o preço errado.”</h3>
+  <p>Pedido emitido congela os preços. Se ainda não foi faturado, um administrador pode editá-lo — a alteração fica registrada na auditoria com antes e depois. Se já avançou, trate com o escritório o caminho comercial (novo pedido ou ajuste com a indústria).</p>
+
+  <h3>“A comissão do vendedor não apareceu no fechamento.”</h3>
+  <p>Verifique o regime da indústria (capítulo 8). No pós-recebimento, a comissão só entra depois da <strong>baixa</strong> da parcela no financeiro — confira se o recebimento foi registrado.</p>
+
+  <h3>“Registrei uma baixa com o valor errado.”</h3>
+  <p>Fale com o administrador: o acerto é feito no financeiro e tudo fica rastreado na auditoria.</p>
+
+  <h3>“Quem faz cada coisa?”</h3>
+  <table>
+    <tr><th>Preciso de…</th><th>Falar com</th></tr>
+    <tr><td>Criar conta, resetar senha, reativar usuário</td><td>Administrador do sistema</td></tr>
+    <tr><td>Liberar tabela ou ajustar % de comissão</td><td>Gestor (tela de Vendedores)</td></tr>
+    <tr><td>Corrigir pedido, baixa ou fechamento</td><td>Escritório / administrador</td></tr>
+  </table>
+
+  <div class="rodape-doc">Gestão HB · Manual de Uso · julho/2026</div>
+  <div class="num-pg">15</div>
+</div>
+
+</body>
+</html>
